@@ -4,8 +4,8 @@
 export const profile = {
   name: "Kexuan Zhang",
   handle: "Lazy_V",
-  osName: "Kexuan 98",
-  pocketName: "Pocket Kexuan",
+  osName: "Portfolio-98",
+  pocketName: "Pocket Portfolio-98",
   title: "PhD Student in Perceptual Graphics",
   affiliation: "University of Leeds",
   location:

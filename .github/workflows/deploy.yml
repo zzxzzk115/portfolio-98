@@ -23,7 +23,9 @@ jobs:
         with:
           node-version: 22
           cache: npm
-      - run: npm ci
+      # npm install instead of npm ci: locks generated on Windows omit nested
+      # deps of wasm32-wasi optional packages (npm/cli#4828), breaking ci on linux
+      - run: npm install
       - run: npm run build
         env:
           NEXT_PUBLIC_BASE_PATH: /win98-portfolio
