@@ -1,4 +1,4 @@
-# win98-portfolio
+# portfolio-98
 
 **Portfolio-98** — a personal homepage styled after Windows 98, built with Next.js.
 
@@ -32,7 +32,7 @@ bio, publications, projects, links. Apps render from it.
 ## Deployment
 
 Pushes to `main` build a static export and deploy to GitHub Pages
-(`NEXT_PUBLIC_BASE_PATH=/win98-portfolio`). See
+(`NEXT_PUBLIC_BASE_PATH=/portfolio-98`). See
 [`.github/workflows/deploy.yml`](.github/workflows/deploy.yml).
 
 ## Credits

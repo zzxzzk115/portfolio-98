@@ -28,7 +28,7 @@ jobs:
       - run: npm install
       - run: npm run build
         env:
-          NEXT_PUBLIC_BASE_PATH: /win98-portfolio
+          NEXT_PUBLIC_BASE_PATH: /portfolio-98
       - uses: actions/upload-pages-artifact@v3
         with:
           path: out
