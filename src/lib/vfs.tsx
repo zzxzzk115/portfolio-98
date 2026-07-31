@@ -65,6 +65,30 @@ function errorDialogDescriptor(fileName: string): AppDescriptor {
   };
 }
 
+function pdfViewerDescriptor(name: string, url: string): AppDescriptor {
+  return {
+    id: `pdf-${name}`,
+    title: name,
+    icon: "book",
+    component: function PdfWindow() {
+      return (
+        <div className="app-body app-body-fill">
+          <div className="toolbar-row">
+            <a className="btn-link" href={url} target="_blank" rel="noreferrer">
+              <button>Open in new tab</button>
+            </a>
+            <a className="btn-link" href={url} download={name}>
+              <button>Download</button>
+            </a>
+          </div>
+          <iframe className="fill-frame" src={url} title={name} />
+        </div>
+      );
+    },
+    defaultSize: { width: 640, height: 640 },
+  };
+}
+
 function textFileDescriptor(name: string, text: string): AppDescriptor {
   return {
     id: `txt-${name}`,
@@ -209,8 +233,12 @@ export function buildVfs(content: SiteContent): VfsNode {
         icon: "book",
         typeName: "PDF Document",
         sizeKB: 3050,
-        open: () => {
-          if (pub.meta.pdf) window.open(asset(pub.meta.pdf), "_blank");
+        open: (wm) => {
+          if (pub.meta.pdf) {
+            wm.open(
+              pdfViewerDescriptor(`${pub.meta.id}.pdf`, asset(pub.meta.pdf))
+            );
+          }
         },
       })
     )
