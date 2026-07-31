@@ -47,4 +47,7 @@ Pushes to `main` build a static export and deploy to GitHub Pages
 ## Credits
 
 - [98.css](https://jdan.github.io/98.css/) for the authentic widget styling
+- [Strudel](https://strudel.cc) (AGPL-3.0) powers the Music Player — live-coded
+  patterns in `content/music/*.md`. This repository is licensed AGPL-3.0
+  accordingly (see [LICENSE](LICENSE)).
 - Content originally from [zzxzzk115.github.io](https://zzxzzk115.github.io) (al-folio)

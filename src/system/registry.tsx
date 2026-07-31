@@ -9,6 +9,9 @@ import { GamesApp } from "@/apps/GamesApp";
 import { ContactApp } from "@/apps/ContactApp";
 import { NotepadApp } from "@/apps/NotepadApp";
 import { DisplayApp } from "@/apps/DisplayApp";
+import { MusicApp } from "@/apps/MusicApp";
+import { MinesweeperApp } from "@/apps/MinesweeperApp";
+import { IExploreApp } from "@/apps/IExploreApp";
 
 export const APPS: AppDescriptor[] = [
   {
@@ -59,6 +62,36 @@ export const APPS: AppDescriptor[] = [
     icon: "joystick",
     component: GamesApp,
     defaultSize: { width: 760, height: 420 },
+    desktop: true,
+    startMenu: true,
+    pocket: true,
+  },
+  {
+    id: "music",
+    title: "Music Player",
+    icon: "note",
+    component: MusicApp,
+    defaultSize: { width: 440, height: 620 },
+    desktop: true,
+    startMenu: true,
+    pocket: true,
+  },
+  {
+    id: "minesweeper",
+    title: "Minesweeper",
+    icon: "mine",
+    component: MinesweeperApp,
+    defaultSize: { width: 330, height: 480 },
+    desktop: true,
+    startMenu: true,
+    pocket: true,
+  },
+  {
+    id: "iexplore",
+    title: "Internet Explorer",
+    icon: "globe",
+    component: IExploreApp,
+    defaultSize: { width: 760, height: 600 },
     desktop: true,
     startMenu: true,
     pocket: true,

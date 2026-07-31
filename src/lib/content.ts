@@ -4,6 +4,7 @@ import fs from "node:fs";
 import path from "node:path";
 import matter from "gray-matter";
 import type {
+  MusicTrack,
   ProjectContent,
   PublicationContent,
   SiteContent,
@@ -72,5 +73,18 @@ export function loadSiteContent(): SiteContent {
   );
   publications.sort((a, b) => b.meta.year - a.meta.year);
 
-  return { site, aboutMd, readmeText, projects, publications };
+  const music: MusicTrack[] = listMd("music").map((file) => {
+    const { data, content } = readMd("music", file);
+    const d = data as Partial<MusicTrack>;
+    return {
+      id: file.replace(/\.md$/, ""),
+      title: d.title ?? file,
+      artist: d.artist ?? "",
+      order: d.order ?? 99,
+      code: content.trim(),
+    };
+  });
+  music.sort((a, b) => a.order - b.order);
+
+  return { site, aboutMd, readmeText, projects, publications, music };
 }

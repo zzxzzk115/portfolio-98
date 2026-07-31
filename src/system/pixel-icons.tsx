@@ -290,6 +290,48 @@ export const ICONS: Record<string, PixelArt> = {
     ],
     P
   ),
+  note: art(
+    [
+      "                ",
+      "      kkkkkkkk  ",
+      "     kkwwwwwwk  ",
+      "    kkwkkkkkkk  ",
+      "    kwk    kwk  ",
+      "    kwk    kwk  ",
+      "    kwk    kwk  ",
+      "    kwk    kwk  ",
+      "    kwk    kwk  ",
+      "   kkwk   kkwk  ",
+      "  kMMwk  kMMwk  ",
+      " kMMMMk kMMMMk  ",
+      " kMMMMk kMMMMk  ",
+      "  kMMk   kMMk   ",
+      "   kk     kk    ",
+      "                ",
+    ],
+    P
+  ),
+  mine: art(
+    [
+      "                ",
+      "       k        ",
+      "   k   k   k    ",
+      "    k kkk k     ",
+      "     kkkkk      ",
+      "    kkkkkkk     ",
+      "   kkwwkkkkk    ",
+      " kkkwkkkkkkkkk  ",
+      "   kkkkkkkkk    ",
+      "   kkkkkkkkk    ",
+      "    kkkkkkk     ",
+      "     kkkkk      ",
+      "    k kkk k     ",
+      "   k   k   k    ",
+      "       k        ",
+      "                ",
+    ],
+    P
+  ),
   flag: art(
     [
       "                ",

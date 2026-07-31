@@ -61,10 +61,19 @@ export interface PublicationContent {
   body: string; // markdown: abstract + citation
 }
 
+export interface MusicTrack {
+  id: string;
+  title: string;
+  artist: string;
+  order: number;
+  code: string; // strudel pattern source
+}
+
 export interface SiteContent {
   site: SiteMeta;
   aboutMd: string;
   readmeText: string;
   projects: ProjectContent[];
   publications: PublicationContent[];
+  music: MusicTrack[];
 }

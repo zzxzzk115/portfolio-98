@@ -151,6 +151,36 @@ a {
   outline: 1px dotted #ffff00;
 }
 
+.desktop-refreshing {
+  opacity: 0;
+}
+
+/* ---------- context menu ---------- */
+
+.context-menu {
+  position: absolute;
+  z-index: 100002;
+  display: flex;
+  flex-direction: column;
+  min-width: 180px;
+  padding: 3px;
+}
+
+.context-menu-item {
+  width: 100%;
+  padding: 4px 20px 4px 16px;
+}
+
+.context-menu-item:disabled {
+  color: #808080;
+  text-shadow: 1px 1px 0 #fff;
+}
+
+.context-menu-item:disabled:hover {
+  background: none;
+  color: #808080;
+}
+
 /* ---------- windows ---------- */
 
 .win98-window {
@@ -805,6 +835,38 @@ a {
   overflow-y: auto;
 }
 
+.pocket-menu-heading {
+  padding: 3px 10px;
+  color: #808080;
+  font-weight: bold;
+}
+
+.pocket-running-item {
+  cursor: pointer;
+}
+
+.pocket-running-item-active {
+  font-weight: bold;
+}
+
+.pocket-running-item span {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.pocket-running-close {
+  min-width: 20px;
+  min-height: 18px;
+  width: 20px;
+  height: 18px;
+  padding: 0;
+  font-size: 12px;
+  line-height: 1;
+  flex: 0 0 auto;
+}
+
 .pocket-app {
   flex: 1;
   overflow: hidden;
@@ -853,6 +915,220 @@ a {
 
 .pocket-grid-icon {
   width: auto;
+}
+
+/* ---------- music player ---------- */
+
+.music-player {
+  padding: 8px;
+  gap: 6px;
+  overflow-y: auto;
+}
+
+.music-lcd {
+  background: #0a1a0a;
+  color: #39ff5a;
+  border: 2px solid;
+  border-color: #808080 #fff #fff #808080;
+  padding: 6px 8px;
+  font-family: "Fixedsys", "Courier New", monospace;
+  flex: 0 0 auto;
+}
+
+.music-lcd-title {
+  overflow: hidden;
+  white-space: nowrap;
+  font-size: 14px;
+  margin-bottom: 4px;
+}
+
+.music-marquee {
+  display: inline-block;
+  padding-left: 100%;
+  animation: music-marquee 9s linear infinite;
+}
+
+@keyframes music-marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-100%);
+  }
+}
+
+.music-lcd-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+}
+
+.music-lcd-error {
+  color: #ff5a39;
+  font-size: 11px;
+  margin-top: 4px;
+  white-space: pre-wrap;
+}
+
+.music-controls {
+  display: flex;
+  gap: 4px;
+  flex: 0 0 auto;
+}
+
+.music-controls button {
+  min-width: 44px;
+  height: 28px;
+  font-size: 14px;
+}
+
+.music-playlist {
+  flex: 0 0 auto;
+  max-height: 110px;
+}
+
+.music-tracknum {
+  color: inherit;
+  opacity: 0.7;
+  margin-right: 2px;
+}
+
+.music-artist {
+  margin-left: auto;
+  opacity: 0.7;
+}
+
+.music-code {
+  flex: 1;
+  min-height: 90px;
+  margin: 0;
+  padding: 8px;
+  background: #000;
+  color: #39ff5a;
+  border: 2px solid;
+  border-color: #808080 #fff #fff #808080;
+  overflow: auto;
+  font-family: "Courier New", monospace;
+  font-size: 12px;
+  line-height: 1.4;
+  user-select: text;
+}
+
+.music-hint {
+  flex: 0 0 auto;
+  margin: 0;
+}
+
+/* ---------- minesweeper ---------- */
+
+.mine-app {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.mine-panel {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  width: 100%;
+  max-width: 236px;
+  padding: 4px;
+  margin-bottom: 6px;
+  border: 2px solid;
+  border-color: #808080 #fff #fff #808080;
+}
+
+.mine-led {
+  background: #000;
+  color: #ff0000;
+  font-family: "Fixedsys", "Courier New", monospace;
+  font-size: 18px;
+  font-weight: bold;
+  padding: 1px 4px;
+  min-width: 44px;
+  text-align: center;
+}
+
+.mine-face {
+  min-width: 30px;
+  min-height: 30px;
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  font-size: 16px;
+}
+
+.mine-grid {
+  display: grid;
+  grid-template-columns: repeat(9, 24px);
+  border: 3px solid;
+  border-color: #808080 #fff #fff #808080;
+}
+
+.mine-cell {
+  width: 24px;
+  height: 24px;
+  min-width: 0;
+  min-height: 0;
+  padding: 0;
+  font-size: 13px;
+  font-weight: bold;
+  font-family: "Fixedsys", "Courier New", monospace;
+  line-height: 1;
+}
+
+.mine-cell-revealed {
+  box-shadow: none;
+  border: 1px solid #808080;
+  border-width: 0 1px 1px 0;
+  background: #d4d0c8;
+}
+
+.mine-flagmode-active {
+  box-shadow: inset -1px -1px #fff, inset 1px 1px #0a0a0a,
+    inset -2px -2px #dfdfdf, inset 2px 2px #808080;
+  font-weight: bold;
+}
+
+/* ---------- internet explorer ---------- */
+
+.ie-app {
+  gap: 4px;
+}
+
+.ie-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex: 0 0 auto;
+}
+
+.ie-toolbar button {
+  min-width: 30px;
+  height: 24px;
+  padding: 0 6px;
+}
+
+.ie-address {
+  flex: 1;
+  height: 24px;
+  min-width: 0;
+}
+
+.ie-bookmarks {
+  flex-wrap: wrap;
+}
+
+.ie-links-label {
+  color: #444;
+  padding: 0 2px;
+}
+
+.ie-hint {
+  flex: 0 0 auto;
+  margin: 0;
 }
 
 /* ---------- Win98 scrollbars ---------- */

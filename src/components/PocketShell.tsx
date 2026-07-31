@@ -60,6 +60,38 @@ export function PocketShell() {
 
       {startOpen ? (
         <div className="pocket-start-menu window">
+          {wm.windows.length > 0 ? (
+            <>
+              <div className="pocket-menu-heading">Running</div>
+              {wm.windows.map((w) => (
+                <div
+                  key={w.id}
+                  className={
+                    "start-menu-item pocket-running-item" +
+                    (top?.id === w.id ? " pocket-running-item-active" : "")
+                  }
+                  onClick={() => {
+                    wm.focus(w.id);
+                    setStartOpen(false);
+                  }}
+                >
+                  <PixelIcon name={w.app.icon} size={20} />
+                  <span>{w.app.title}</span>
+                  <button
+                    className="pocket-running-close"
+                    aria-label={`Close ${w.app.title}`}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      wm.close(w.id);
+                    }}
+                  >
+                    ×
+                  </button>
+                </div>
+              ))}
+              <div className="start-menu-separator" />
+            </>
+          ) : null}
           {launcherApps.map((app) => (
             <button
               key={app.id}
