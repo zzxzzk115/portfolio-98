@@ -91,7 +91,7 @@ export function PocketShell() {
                       wm.close(w.id);
                     }}
                   >
-                    ×
+                    <PixelIcon name="close" size={10} />
                   </button>
                 </div>
               ))}

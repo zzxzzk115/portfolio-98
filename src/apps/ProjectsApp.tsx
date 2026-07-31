@@ -41,10 +41,6 @@ export function ProjectsApp() {
 
   return (
     <div className="app-body">
-      <p className="hint-text">
-        Double-click a project to open it. Each one opens in its own window —
-        this is a real desktop, after all.
-      </p>
       {categories.map((cat) => {
         const items = projects.filter((p) => p.meta.category === cat);
         if (items.length === 0) return null;

@@ -36,7 +36,7 @@ function SpeakerToggle() {
         if (next) playSound("click");
       }}
     >
-      {on ? "🔊" : "🔇"}
+      <PixelIcon name={on ? "speaker" : "mute"} size={14} />
     </button>
   );
 }

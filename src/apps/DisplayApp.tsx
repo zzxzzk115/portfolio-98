@@ -14,8 +14,9 @@ type Tab = "background" | "screensaver" | "effects";
 
 const SS_MODES: { id: ScreensaverMode; name: string }[] = [
   { id: "none", name: "(None)" },
-  { id: "starfield", name: "Starfield (GLSL)" },
-  { id: "tunnel", name: "Shader Tunnel (GLSL)" },
+  { id: "starfield", name: "Starfield Simulation" },
+  { id: "mystify", name: "Mystify Your Mind" },
+  { id: "tunnel", name: "Shader Tunnel" },
   { id: "logo", name: "Flying Logo" },
 ];
 
@@ -114,8 +115,7 @@ export function DisplayApp() {
               <button onClick={() => setPreviewId(wallpaper.id)}>Reset</button>
             </div>
             <p className="hint-text">
-              ★ wallpapers are live GLSL shaders, hand-written — perks of a
-              graphics PhD&apos;s homepage.
+              ★ wallpapers are real-time GLSL shaders.
             </p>
           </>
         ) : null}

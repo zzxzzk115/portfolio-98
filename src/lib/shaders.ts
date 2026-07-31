@@ -64,25 +64,28 @@ void main() {
 }
 `;
 
+// Classic "Starfield Simulation": hard white pixel stars streaming outward
+// from the center, like flying through space at 640x480.
 export const STARFIELD_FRAG = `
 float hash(vec2 p) { return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
 void main() {
   vec2 uv = (gl_FragCoord.xy - 0.5 * u_resolution.xy) / u_resolution.y;
   vec3 col = vec3(0.0);
-  for (int layer = 0; layer < 6; layer++) {
+  float px = 2.0 / u_resolution.y; // one screen pixel in uv units
+  for (int layer = 0; layer < 8; layer++) {
     float fl = float(layer);
-    float speed = 0.05 + fl * 0.05;
-    float scale = 18.0 + fl * 14.0;
-    float z = fract(u_time * speed + fl * 0.37);
-    vec2 grid = uv * scale / (0.2 + z);
+    float z = fract(u_time * 0.12 + fl / 8.0);
+    // Stars rush outward as z shrinks the grid toward the viewer.
+    vec2 grid = uv * mix(30.0, 1.5, z);
     vec2 cell = floor(grid);
     vec2 f = fract(grid) - 0.5;
-    float star = hash(cell + fl * 91.7);
-    if (star > 0.96) {
-      float b = (1.0 - length(f) * 2.0);
-      b = max(0.0, b);
-      b = pow(b, 6.0) * z * (0.4 + 0.6 * hash(cell * 1.3));
-      col += vec3(b) * vec3(0.8 + 0.2 * star, 0.9, 1.0);
+    float r = hash(cell + fl * 91.7);
+    if (r > 0.93) {
+      // Hard square "pixel" star; grows slightly as it approaches.
+      float size = px * mix(18.0, 60.0, z) * (0.5 + 0.5 * hash(cell * 1.3));
+      float d = max(abs(f.x), abs(f.y)) * mix(30.0, 1.5, z);
+      float b = step(d, size) * mix(0.15, 1.0, z);
+      col = max(col, vec3(b));
     }
   }
   gl_FragColor = vec4(col, 1.0);

@@ -5,14 +5,12 @@ import { PixelIcon } from "@/system/pixel-icons";
 
 const TIPS = [
   "It looks like you're visiting a homepage. Would you like help pretending it's 1998?",
-  "双击桌面图标可以打开 App。你肯定还记得双击。",
   "Try right-clicking the desktop. The Refresh button does nothing, beautifully.",
-  "The ★ wallpapers are hand-written GLSL shaders. 图形学博士的排面。",
-  "在 Task Manager 里结束 explorer.exe,会发生一些怀旧的事情。",
-  "Open MS-DOS Prompt and type DIR. Old habits compile fast.",
-  "音乐播放器里的曲子是 Strudel 代码现场演奏的,不是音频文件。",
-  "OQ2000 里住着我的友链。双击企鹅可以尬聊。",
-  "Idle for a while and the screensaver kicks in. I wrote it a raymarcher.",
+  "The ★ wallpapers in Display Properties are real-time GLSL shaders.",
+  "End explorer.exe in the Task Manager. Something nostalgic will happen.",
+  "The Music Player performs live code — there are no audio files on this machine.",
+  "The penguins in OQ2000 are my friends. Double-click one for awkward small talk.",
+  "Stay idle for a while and a screensaver takes over. Just like the good old days.",
   "This assistant is not powered by AI. It is powered by nostalgia.",
 ];
 
@@ -49,7 +47,7 @@ export function Clippy() {
             setVisible(false);
           }}
         >
-          ×
+          <PixelIcon name="close" size={10} />
         </button>
         <p>{TIPS[tip]}</p>
         <button

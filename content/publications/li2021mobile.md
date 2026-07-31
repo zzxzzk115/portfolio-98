@@ -5,6 +5,7 @@ venue: Computer Systems & Applications, 30(6), p.82
 year: 2021
 doi: 10.15888/j.cnki.csa.007939
 pdf: /assets/li_zhang_2021.pdf
+preview: /assets/pubs/csa.jpg
 links:
   - label: CNKI
     url: https://www.cnki.net/KCMS/detail/detail.aspx?dbcode=CJFD&dbname=CJFDLAST2021&filename=XTYY202106011&uniplatform=OVERSEA&v=gSJgB_xrLlAjeXJHQYAo4T38jwAKTkFrtG1FBaoRP2sBh86yWkU8n5gnBJ_jO4B3

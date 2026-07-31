@@ -31,10 +31,6 @@ export function DocumentsApp() {
 
   return (
     <div className="app-body">
-      <p className="hint-text">
-        Notes and write-ups. Double-click to read. New files appear whenever I
-        write something.
-      </p>
       <div className="icon-grid">
         {posts.map((post) => (
           <button

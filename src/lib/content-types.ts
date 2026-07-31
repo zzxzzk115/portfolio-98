@@ -53,7 +53,12 @@ export interface PublicationMeta {
   year: number;
   doi?: string;
   pdf?: string;
-  links: { label: string; url: string }[];
+  preview?: string; // journal/conference cover thumbnail
+  teaser?: string; // optional figure shown with the abstract
+  projectPage?: string; // dedicated project-page button
+  github?: string; // repo url or "owner/name" — dedicated code button
+  // Extensible icon buttons; `icon` is a pixel-icon name.
+  links: { label: string; url: string; icon?: string }[];
 }
 
 export interface PublicationContent {

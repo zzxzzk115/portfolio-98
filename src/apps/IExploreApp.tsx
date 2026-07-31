@@ -152,10 +152,6 @@ export function IExploreApp() {
         src={current}
         title="Internet Explorer"
       />
-      <p className="hint-text ie-hint">
-        Some sites refuse to be framed (X-Frame-Options) and will stay blank —
-        the Links above are known to work.
-      </p>
     </div>
   );
 }

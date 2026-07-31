@@ -1,8 +1,8 @@
 "use client";
 
-/* eslint-disable @next/next/no-img-element */
 import { useContent } from "@/system/ContentContext";
 import { Markdown } from "@/components/Markdown";
+import { DitheredImage } from "@/lib/dither";
 import { asset } from "@/system/types";
 
 export function AboutApp() {
@@ -10,7 +10,11 @@ export function AboutApp() {
   return (
     <div className="app-body">
       <div className="about-header">
-        <img src={asset(site.avatar)} alt={site.name} className="about-avatar" />
+        <DitheredImage
+          src={asset(site.avatar)}
+          alt={site.name}
+          className="about-avatar"
+        />
         <div>
           <h1 className="about-name">{site.name}</h1>
           <p className="about-title">

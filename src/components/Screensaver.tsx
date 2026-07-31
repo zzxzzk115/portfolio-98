@@ -6,6 +6,71 @@ import { STARFIELD_FRAG, TUNNEL_FRAG } from "@/lib/shaders";
 import { useSettings } from "@/system/Settings";
 import { useContent } from "@/system/ContentContext";
 
+// Mystify Your Mind: bouncing polylines with fading trails.
+function Mystify() {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    interface Shape {
+      pts: { x: number; y: number; vx: number; vy: number }[];
+      hue: number;
+      trail: { x: number; y: number }[][];
+    }
+    const rand = (a: number, b: number) => a + Math.random() * (b - a);
+    const shapes: Shape[] = Array.from({ length: 2 }, (_, s) => ({
+      pts: Array.from({ length: 4 }, () => ({
+        x: rand(0, canvas.width),
+        y: rand(0, canvas.height),
+        vx: rand(2, 5) * (Math.random() < 0.5 ? -1 : 1),
+        vy: rand(2, 5) * (Math.random() < 0.5 ? -1 : 1),
+      })),
+      hue: s === 0 ? 180 : 300,
+      trail: [],
+    }));
+
+    let raf = 0;
+    const tick = () => {
+      raf = requestAnimationFrame(tick);
+      ctx.fillStyle = "#000";
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      shapes.forEach((shape) => {
+        shape.pts.forEach((p) => {
+          p.x += p.vx;
+          p.y += p.vy;
+          if (p.x <= 0 || p.x >= canvas.width) p.vx = -p.vx;
+          if (p.y <= 0 || p.y >= canvas.height) p.vy = -p.vy;
+        });
+        shape.trail.push(shape.pts.map((p) => ({ x: p.x, y: p.y })));
+        if (shape.trail.length > 14) shape.trail.shift();
+        shape.hue = (shape.hue + 0.4) % 360;
+        shape.trail.forEach((poly, i) => {
+          ctx.strokeStyle = `hsla(${shape.hue}, 100%, 60%, ${
+            (i + 1) / shape.trail.length
+          })`;
+          ctx.beginPath();
+          poly.forEach((p, j) =>
+            j === 0 ? ctx.moveTo(p.x, p.y) : ctx.lineTo(p.x, p.y)
+          );
+          ctx.closePath();
+          ctx.stroke();
+        });
+      });
+    };
+    tick();
+    return () => cancelAnimationFrame(raf);
+  }, []);
+
+  return <canvas ref={canvasRef} className="ss-canvas" />;
+}
+
 function FlyingLogo() {
   const { site } = useContent();
   const ref = useRef<HTMLDivElement>(null);
@@ -71,6 +136,7 @@ export function Screensaver({ onExit }: { onExit: () => void }) {
       {screensaverMode === "starfield" ? (
         <ShaderCanvas frag={STARFIELD_FRAG} className="ss-canvas" />
       ) : null}
+      {screensaverMode === "mystify" ? <Mystify /> : null}
       {screensaverMode === "tunnel" ? (
         <ShaderCanvas frag={TUNNEL_FRAG} className="ss-canvas" />
       ) : null}

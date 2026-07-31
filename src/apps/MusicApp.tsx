@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useContent } from "@/system/ContentContext";
+import { PixelIcon } from "@/system/pixel-icons";
 import type { MusicTrack } from "@/lib/content-types";
 
 // Strudel is loaded lazily on first play (the audio engine is ~800KB) and
@@ -204,20 +205,20 @@ export function MusicApp() {
 
       <div className="music-controls">
         <button onClick={() => step(-1)} title="Previous">
-          ⏮
+          <PixelIcon name="prev" size={14} />
         </button>
         <button
           onClick={() => play()}
           disabled={state === "loading"}
           title="Play"
         >
-          ▶
+          <PixelIcon name="play" size={14} />
         </button>
         <button onClick={stop} title="Stop">
-          ⏹
+          <PixelIcon name="stop" size={14} />
         </button>
         <button onClick={() => step(1)} title="Next">
-          ⏭
+          <PixelIcon name="next" size={14} />
         </button>
       </div>
 
@@ -248,8 +249,7 @@ export function MusicApp() {
         <a href="https://strudel.cc" target="_blank" rel="noreferrer">
           Strudel
         </a>
-        . First play loads the audio engine; drum samples need the network.
-        Double-click a track to play it.
+        .
       </p>
     </div>
   );

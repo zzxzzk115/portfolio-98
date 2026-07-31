@@ -33,10 +33,6 @@ export function GamesApp() {
 
   return (
     <div className="app-body">
-      <p className="hint-text">
-        Games I&apos;ve made. Lazy-100 runs right here in a window — the others
-        link out to Steam / itch.io.
-      </p>
       <div className="icon-grid">
         <button
           className="icon-grid-item project-card"

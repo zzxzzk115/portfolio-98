@@ -204,11 +204,11 @@ export function MinesweeperApp() {
           🚩 Flag mode {flagMode ? "ON" : "off"}
         </button>
       </div>
-      <p className="hint-text">
-        Left-click to reveal, right-click to flag. On touch screens use Flag
-        mode. {game === "won" ? "You win! 🎉" : null}
-        {game === "lost" ? "Boom. Press the face to retry." : null}
-      </p>
+      {game === "won" || game === "lost" ? (
+        <p className="hint-text">
+          {game === "won" ? "You win! 🎉" : "Boom."}
+        </p>
+      ) : null}
     </div>
   );
 }

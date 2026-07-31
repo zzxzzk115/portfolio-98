@@ -46,7 +46,7 @@ function chatAppDescriptor(friend: Friend): AppDescriptor {
           { from: "me", text },
           {
             from: "friend",
-            text: "(自动回复) 我不在电脑旁,来我的主页看看吧! 👉",
+            text: "(Auto-reply) Away from keyboard — come visit my homepage instead! 👉",
           },
         ]);
       };
@@ -82,7 +82,7 @@ function chatAppDescriptor(friend: Friend): AppDescriptor {
               target="_blank"
               rel="noreferrer"
             >
-              <button>访问主页</button>
+              <button>Homepage</button>
             </a>
           </div>
         </div>
@@ -106,7 +106,9 @@ export function OQ2000App() {
           <div className="oq-self-status">● Online — {site.title}</div>
         </div>
       </div>
-      <div className="oq-group">我的好友 ({online}/{friends.length} 在线)</div>
+      <div className="oq-group">
+        My Friends ({online}/{friends.length} online)
+      </div>
       <div className="oq-list sunken-panel">
         {friends.map((f) => (
           <div
@@ -114,7 +116,7 @@ export function OQ2000App() {
             className="oq-friend"
             onDoubleClick={() => wm.open(chatAppDescriptor(f))}
             onClick={() => wm.open(chatAppDescriptor(f))}
-            title={`双击和 ${f.name} 聊天`}
+            title={f.name}
           >
             <FriendAvatar friend={f} size={28} />
             <div className="oq-friend-meta">
@@ -125,13 +127,9 @@ export function OQ2000App() {
           </div>
         ))}
         {friends.length === 0 ? (
-          <p className="hint-text">还没有好友。快去交朋友!</p>
+          <p className="hint-text">No friends online.</p>
         ) : null}
       </div>
-      <p className="hint-text oq-hint">
-        Friend links, OQ2000 style. Double-click a buddy to chat — they will
-        politely redirect you to their homepage.
-      </p>
     </div>
   );
 }

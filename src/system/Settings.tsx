@@ -44,7 +44,12 @@ export const WALLPAPERS: Wallpaper[] = [
   { id: "ripple", name: "★ Ripple (GLSL)", css: "#052540", frag: RIPPLE_FRAG },
 ];
 
-export type ScreensaverMode = "none" | "starfield" | "tunnel" | "logo";
+export type ScreensaverMode =
+  | "none"
+  | "starfield"
+  | "mystify"
+  | "tunnel"
+  | "logo";
 
 interface SettingsApi {
   wallpaper: Wallpaper;
@@ -82,7 +87,10 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
     if (wp && WALLPAPERS.some((w) => w.id === wp)) setWallpaperIdState(wp);
     setCrtState(localStorage.getItem(CRT_KEY) === "on");
     const mode = localStorage.getItem(SS_MODE_KEY) as ScreensaverMode | null;
-    if (mode && ["none", "starfield", "tunnel", "logo"].includes(mode)) {
+    if (
+      mode &&
+      ["none", "starfield", "mystify", "tunnel", "logo"].includes(mode)
+    ) {
       setSsModeState(mode);
     }
     const delay = Number(localStorage.getItem(SS_DELAY_KEY));
