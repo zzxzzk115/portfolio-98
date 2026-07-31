@@ -38,12 +38,21 @@ export function Win98Window({ win }: { win: WindowState }) {
       const newH = Math.min(rect.height + extraH + 6, maxH);
       const newW = Math.min(rect.width + extraW, maxW);
       wm.resize(win.id, newW, newH);
-      // Keep the grown window fully on screen.
-      wm.move(
-        win.id,
-        Math.max(8, Math.min(rect.left, window.innerWidth - newW - 8)),
-        Math.max(8, Math.min(rect.top, window.innerHeight - 30 - newH - 8))
-      );
+      if (win.app.centered) {
+        // Re-center with the grown size (taskbar excluded).
+        wm.move(
+          win.id,
+          Math.max(8, Math.round((window.innerWidth - newW) / 2)),
+          Math.max(8, Math.round((window.innerHeight - 30 - newH) / 2))
+        );
+      } else {
+        // Keep the grown window fully on screen.
+        wm.move(
+          win.id,
+          Math.max(8, Math.min(rect.left, window.innerWidth - newW - 8)),
+          Math.max(8, Math.min(rect.top, window.innerHeight - 30 - newH - 8))
+        );
+      }
       fitDone.current = true;
     };
 

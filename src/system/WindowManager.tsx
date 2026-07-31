@@ -57,8 +57,13 @@ export function WindowManagerProvider({ children }: { children: ReactNode }) {
         const vh = typeof window !== "undefined" ? window.innerHeight : 800;
         const width = Math.min(app.defaultSize?.width ?? 560, vw - 24);
         const height = Math.min(app.defaultSize?.height ?? 420, vh - 80);
-        const x = Math.max(8, 60 + ((n * 32) % Math.max(60, vw - width - 80)));
-        const y = Math.max(8, 40 + ((n * 28) % Math.max(60, vh - height - 120)));
+        // 30px taskbar excluded from the vertical centering area.
+        const x = app.centered
+          ? Math.max(8, Math.round((vw - width) / 2))
+          : Math.max(8, 60 + ((n * 32) % Math.max(60, vw - width - 80)));
+        const y = app.centered
+          ? Math.max(8, Math.round((vh - 30 - height) / 2))
+          : Math.max(8, 40 + ((n * 28) % Math.max(60, vh - height - 120)));
         const win: WindowState = {
           id: app.id,
           app,

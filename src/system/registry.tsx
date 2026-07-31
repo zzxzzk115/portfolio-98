@@ -18,6 +18,7 @@ export const APPS: AppDescriptor[] = [
     component: AboutApp,
     defaultSize: { width: 700, height: 560 },
     autoFit: true,
+    centered: true,
     desktop: true,
     startMenu: true,
     pocket: true,
