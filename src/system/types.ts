@@ -6,6 +6,9 @@ export interface AppDescriptor {
   icon: string; // key into ICONS
   component: ComponentType<{ windowId: string }>;
   defaultSize?: { width: number; height: number };
+  // Grow the window after mount so the content fits without scrolling
+  // (clamped to the viewport).
+  autoFit?: boolean;
   // Apps marked as such start maximized on small desktop viewports.
   desktop?: boolean; // show on desktop icon grid
   startMenu?: boolean; // show in start menu

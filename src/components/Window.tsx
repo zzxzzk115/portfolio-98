@@ -1,12 +1,61 @@
 "use client";
 
-import { useRef, type PointerEvent as ReactPointerEvent } from "react";
+import {
+  useEffect,
+  useRef,
+  type PointerEvent as ReactPointerEvent,
+} from "react";
 import type { WindowState } from "@/system/types";
 import { useWindowManager } from "@/system/WindowManager";
 import { PixelIcon } from "@/system/pixel-icons";
 
 export function Win98Window({ win }: { win: WindowState }) {
   const wm = useWindowManager();
+  const rootRef = useRef<HTMLDivElement>(null);
+  const fitDone = useRef(false);
+
+  // autoFit: grow the window once after mount so content fits without
+  // scrolling, clamped to the viewport (taskbar excluded).
+  useEffect(() => {
+    if (!win.app.autoFit || fitDone.current) return;
+
+    const fit = () => {
+      const root = rootRef.current;
+      if (!root || fitDone.current) return;
+      const scroller =
+        root.querySelector<HTMLElement>(".app-body") ??
+        root.querySelector<HTMLElement>(".win98-window-body");
+      if (!scroller) return;
+      const extraH = scroller.scrollHeight - scroller.clientHeight;
+      const extraW = scroller.scrollWidth - scroller.clientWidth;
+      if (extraH <= 0 && extraW <= 0) {
+        fitDone.current = true;
+        return;
+      }
+      const rect = root.getBoundingClientRect();
+      const maxH = window.innerHeight - 30 - 16; // taskbar + margin
+      const maxW = window.innerWidth - 16;
+      const newH = Math.min(rect.height + extraH + 6, maxH);
+      const newW = Math.min(rect.width + extraW, maxW);
+      wm.resize(win.id, newW, newH);
+      // Keep the grown window fully on screen.
+      wm.move(
+        win.id,
+        Math.max(8, Math.min(rect.left, window.innerWidth - newW - 8)),
+        Math.max(8, Math.min(rect.top, window.innerHeight - 30 - newH - 8))
+      );
+      fitDone.current = true;
+    };
+
+    // Measure after first paint, then re-measure once webfonts settle.
+    const raf = requestAnimationFrame(fit);
+    document.fonts?.ready.then(() => {
+      fitDone.current = false;
+      fit();
+    });
+    return () => cancelAnimationFrame(raf);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
   const dragState = useRef<{
     mode: "move" | "resize";
     startX: number;
@@ -89,6 +138,7 @@ export function Win98Window({ win }: { win: WindowState }) {
 
   return (
     <div
+      ref={rootRef}
       className={
         "window win98-window" +
         (win.maximized ? " win98-window-maximized" : "") +

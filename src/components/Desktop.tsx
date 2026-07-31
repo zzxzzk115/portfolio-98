@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { APPS } from "@/system/registry";
 import { useWindowManager } from "@/system/WindowManager";
 import { useSettings } from "@/system/Settings";
@@ -13,6 +13,16 @@ export function Desktop({ onShutdown }: { onShutdown: () => void }) {
   const wm = useWindowManager();
   const { wallpaper } = useSettings();
   const [startOpen, setStartOpen] = useState(false);
+  const autoOpened = useRef(false);
+
+  // Greet visitors with About Me already open.
+  useEffect(() => {
+    if (autoOpened.current) return;
+    autoOpened.current = true;
+    const about = APPS.find((a) => a.id === "about");
+    if (about) wm.open(about);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
   const [selectedIcon, setSelectedIcon] = useState<string | null>(null);
 
   const desktopApps = APPS.filter((a) => a.desktop);
