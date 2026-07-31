@@ -1,10 +1,12 @@
 "use client";
 
 import { useState } from "react";
-import { publications } from "@/data/profile";
+import { useContent } from "@/system/ContentContext";
+import { Markdown } from "@/components/Markdown";
 import { asset } from "@/system/types";
 
 export function PublicationsApp() {
+  const { publications } = useContent();
   const [expanded, setExpanded] = useState<string | null>(null);
 
   return (
@@ -13,27 +15,27 @@ export function PublicationsApp() {
         Peer-reviewed publications. More coming as the PhD progresses — watch
         this space.
       </p>
-      {publications.map((pub) => (
-        <fieldset key={pub.id} className="pub-entry">
-          <legend>{pub.year}</legend>
-          <b>{pub.title}</b>
-          <p className="pub-authors">{pub.authors}</p>
+      {publications.map(({ meta, body }) => (
+        <fieldset key={meta.id} className="pub-entry">
+          <legend>{meta.year}</legend>
+          <b>{meta.title}</b>
+          <p className="pub-authors">{meta.authors}</p>
           <p className="pub-venue">
-            <i>{pub.venue}</i>
-            {pub.doi ? <> · DOI: {pub.doi}</> : null}
+            <i>{meta.venue}</i>
+            {meta.doi ? <> · DOI: {meta.doi}</> : null}
           </p>
           <div className="toolbar-row">
-            {pub.pdf ? (
+            {meta.pdf ? (
               <a
                 className="btn-link"
-                href={asset(pub.pdf)}
+                href={asset(meta.pdf)}
                 target="_blank"
                 rel="noreferrer"
               >
                 <button>PDF</button>
               </a>
             ) : null}
-            {(pub.external ?? []).map((e) => (
+            {meta.links.map((e) => (
               <a
                 key={e.label}
                 className="btn-link"
@@ -44,22 +46,19 @@ export function PublicationsApp() {
                 <button>{e.label}</button>
               </a>
             ))}
-            {pub.abstract ? (
+            {body ? (
               <button
                 onClick={() =>
-                  setExpanded(expanded === pub.id ? null : pub.id)
+                  setExpanded(expanded === meta.id ? null : meta.id)
                 }
               >
-                {expanded === pub.id ? "Hide abstract" : "Abstract"}
+                {expanded === meta.id ? "Hide abstract" : "Abstract"}
               </button>
             ) : null}
           </div>
-          {expanded === pub.id ? (
+          {expanded === meta.id ? (
             <div className="sunken-panel pub-abstract">
-              <p>{pub.abstract}</p>
-              {pub.citationCn ? (
-                <p className="pub-citation">{pub.citationCn}</p>
-              ) : null}
+              <Markdown>{body}</Markdown>
             </div>
           ) : null}
         </fieldset>

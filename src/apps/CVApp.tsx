@@ -1,10 +1,11 @@
 "use client";
 
-import { profile } from "@/data/profile";
+import { useContent } from "@/system/ContentContext";
 import { asset } from "@/system/types";
 
 export function CVApp() {
-  const pdf = asset(profile.cvPdf);
+  const { site } = useContent();
+  const pdf = asset(site.cvPdf);
   return (
     <div className="app-body app-body-fill">
       <div className="toolbar-row">

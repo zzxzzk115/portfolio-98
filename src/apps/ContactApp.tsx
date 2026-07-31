@@ -1,9 +1,10 @@
 "use client";
 
-import { profile } from "@/data/profile";
+import { useContent } from "@/system/ContentContext";
 
 export function ContactApp() {
-  const { socials } = profile;
+  const { site } = useContent();
+  const { socials } = site;
   const rows = [
     { label: "Email", value: socials.email, url: `mailto:${socials.email}` },
     {
@@ -23,14 +24,14 @@ export function ContactApp() {
     },
     {
       label: "Academic site",
-      value: "zzxzzk115.github.io",
+      value: socials.academicSite.replace(/^https?:\/\//, ""),
       url: socials.academicSite,
     },
   ];
 
   return (
     <div className="app-body">
-      <p className="hint-text">{profile.location}</p>
+      <p className="hint-text">{site.location}</p>
       <table className="contact-table">
         <tbody>
           {rows.map((r) => (

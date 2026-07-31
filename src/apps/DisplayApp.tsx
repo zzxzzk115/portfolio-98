@@ -22,18 +22,30 @@ export function DisplayApp() {
       </div>
       <fieldset>
         <legend>Wallpaper</legend>
-        <select
-          size={Math.min(WALLPAPERS.length, 6)}
-          className="wallpaper-list"
-          value={previewId}
-          onChange={(e) => setPreviewId(e.target.value)}
-        >
+        <div className="wallpaper-listbox" role="listbox">
           {WALLPAPERS.map((w) => (
-            <option key={w.id} value={w.id}>
+            <div
+              key={w.id}
+              role="option"
+              aria-selected={previewId === w.id}
+              className={
+                "wallpaper-listbox-item" +
+                (previewId === w.id ? " wallpaper-listbox-item-selected" : "")
+              }
+              onClick={() => setPreviewId(w.id)}
+              onDoubleClick={() => {
+                setPreviewId(w.id);
+                setWallpaperId(w.id);
+              }}
+            >
+              <span
+                className="wallpaper-swatch"
+                style={{ background: w.css }}
+              />
               {w.name}
-            </option>
+            </div>
           ))}
-        </select>
+        </div>
       </fieldset>
       <div className="toolbar-row toolbar-row-right">
         <button

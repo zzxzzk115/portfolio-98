@@ -1,6 +1,10 @@
 @import "98.css";
 
-/* ---------- base ---------- */
+/* ---------- base ----------
+   The pixel bitmap font ("Pixelated MS Sans Serif") is drawn for exactly 11px;
+   any other size blurs it. System chrome uses it at 11px with smoothing off.
+   Long-form app content uses Tahoma (the actual Win98-era UI font) for
+   readability. */
 
 html,
 body {
@@ -8,9 +12,10 @@ body {
   margin: 0;
   padding: 0;
   overflow: hidden;
-  font-family: "Pixelated MS Sans Serif", "MS Sans Serif", "Microsoft YaHei",
-    Arial, sans-serif;
-  font-size: 12px;
+  font-family: "Pixelated MS Sans Serif", "MS Sans Serif", Tahoma, "Microsoft YaHei",
+    sans-serif;
+  font-size: 11px;
+  -webkit-font-smoothing: none;
   user-select: none;
 }
 
@@ -60,7 +65,7 @@ a {
 }
 
 .boot-logo-name {
-  font-size: 34px;
+  font-size: 33px; /* 3x the 11px bitmap size, stays crisp */
   color: #fff;
   letter-spacing: 2px;
   text-shadow: 3px 3px 0 #008080;
@@ -216,7 +221,7 @@ a {
   );
 }
 
-/* ---------- app bodies ---------- */
+/* ---------- app bodies (readable text: Tahoma, smoothing back on) ---------- */
 
 .app-body {
   flex: 1;
@@ -224,6 +229,9 @@ a {
   overflow-x: hidden;
   padding: 10px;
   user-select: text;
+  font-family: Tahoma, Verdana, "Microsoft YaHei", sans-serif;
+  font-size: 12px;
+  -webkit-font-smoothing: auto;
 }
 
 .app-body-fill {
@@ -270,18 +278,81 @@ a {
   overflow-y: auto;
 }
 
+/* ---------- markdown content ---------- */
+
+.md-body p {
+  margin: 0 0 8px;
+  line-height: 1.55;
+}
+
+.md-body h2 {
+  font-size: 13px;
+  margin: 12px 0 4px;
+}
+
+.md-body h3 {
+  font-size: 12px;
+  margin: 10px 0 3px;
+}
+
+.md-body ul,
+.md-body ol {
+  margin: 4px 0 8px;
+  padding-left: 20px;
+}
+
+.md-body li {
+  margin-bottom: 3px;
+  line-height: 1.5;
+}
+
+.md-body code {
+  font-family: "Courier New", monospace;
+  background: #eee;
+  padding: 0 3px;
+}
+
+.md-body blockquote {
+  margin: 6px 0 8px;
+  padding: 4px 8px;
+  border-left: 3px solid #808080;
+  background: #eee;
+  color: #444;
+}
+
+.md-body table {
+  border-collapse: collapse;
+  margin: 6px 0 10px;
+  max-width: 100%;
+}
+
+.md-body th,
+.md-body td {
+  border: 1px solid #808080;
+  padding: 3px 8px;
+  text-align: left;
+}
+
+.md-body th {
+  background: #d4d0c8;
+}
+
+.md-body img {
+  max-width: 100%;
+}
+
 /* ---------- about ---------- */
 
 .about-header {
   display: flex;
-  gap: 12px;
+  gap: 14px;
   margin-bottom: 10px;
   align-items: flex-start;
 }
 
 .about-avatar {
-  width: 96px;
-  height: 96px;
+  width: 128px;
+  height: 128px;
   object-fit: cover;
   border: 2px solid;
   border-color: #808080 #fff #fff #808080;
@@ -289,7 +360,7 @@ a {
 
 .about-name {
   margin: 0 0 4px;
-  font-size: 18px;
+  font-size: 20px;
 }
 
 .about-title {
@@ -301,9 +372,8 @@ a {
   padding-left: 16px;
 }
 
-.about-bio p {
-  margin: 0 0 8px;
-  line-height: 1.5;
+.about-bio {
+  margin-bottom: 10px;
 }
 
 .news-list {
@@ -324,15 +394,6 @@ a {
 .pub-authors,
 .pub-venue {
   margin: 4px 0;
-}
-
-.pub-abstract p {
-  margin: 0 0 6px;
-  line-height: 1.5;
-}
-
-.pub-citation {
-  color: #666;
 }
 
 /* ---------- projects ---------- */
@@ -371,20 +432,15 @@ a {
 
 .project-title {
   margin: 0 0 2px;
-  font-size: 17px;
+  font-size: 18px;
 }
 
 .project-blurb {
   margin: 0 0 8px;
 }
 
-.project-heading {
-  margin: 10px 0 2px;
-  font-size: 13px;
-}
-
 .app-body p {
-  line-height: 1.5;
+  line-height: 1.55;
 }
 
 .embed-widget {
@@ -482,8 +538,33 @@ a {
   border-top: none;
 }
 
-.wallpaper-list {
-  width: 100%;
+.wallpaper-listbox {
+  background: #fff;
+  border: 2px solid;
+  border-color: #808080 #fff #fff #808080;
+  max-height: 132px;
+  overflow-y: auto;
+}
+
+.wallpaper-listbox-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 6px;
+  cursor: pointer;
+}
+
+.wallpaper-listbox-item-selected {
+  background: #000080;
+  color: #fff;
+}
+
+.wallpaper-swatch {
+  display: inline-block;
+  width: 24px;
+  height: 16px;
+  border: 1px solid #808080;
+  flex: 0 0 auto;
 }
 
 /* ---------- taskbar ---------- */
@@ -510,7 +591,6 @@ a {
   gap: 4px;
   height: 24px;
   padding: 0 8px 0 4px;
-  font-size: 12px;
 }
 
 .start-button-active {
@@ -619,7 +699,7 @@ a {
   text-decoration: none;
   color: #000;
   min-width: 0;
-  font-size: 12px;
+  font-size: 11px;
 }
 
 .start-menu-item:hover {
@@ -669,7 +749,7 @@ a {
   border: none;
   box-shadow: none;
   color: #fff;
-  font-size: 13px;
+  font-size: 11px;
   padding: 2px 6px;
   min-width: 0;
   flex: 1;
@@ -689,7 +769,7 @@ a {
 }
 
 .pocket-clock {
-  font-size: 12px;
+  font-size: 11px;
 }
 
 .pocket-ok {
@@ -738,8 +818,8 @@ a {
 }
 
 .pocket-avatar {
-  width: 56px;
-  height: 56px;
+  width: 64px;
+  height: 64px;
   object-fit: cover;
   border: 2px solid;
   border-color: #808080 #fff #fff #808080;
@@ -748,6 +828,7 @@ a {
 .pocket-today-sub {
   color: #333;
   margin-top: 2px;
+  font-family: Tahoma, Verdana, "Microsoft YaHei", sans-serif;
 }
 
 .pocket-grid {
@@ -758,6 +839,28 @@ a {
 
 .pocket-grid-icon {
   width: auto;
+}
+
+/* ---------- Win98 scrollbars ---------- */
+
+::-webkit-scrollbar {
+  width: 16px;
+  height: 16px;
+}
+
+::-webkit-scrollbar-track {
+  background: repeating-conic-gradient(#fff 0% 25%, #d4d0c8 0% 50%) 50% / 2px
+    2px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #d4d0c8;
+  box-shadow: inset -1px -1px #0a0a0a, inset 1px 1px #fff,
+    inset -2px -2px #808080, inset 2px 2px #dfdfdf;
+}
+
+::-webkit-scrollbar-corner {
+  background: #d4d0c8;
 }
 
 /* On phones, embedded frames size to viewport */

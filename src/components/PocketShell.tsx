@@ -5,8 +5,8 @@ import { useEffect, useState } from "react";
 import { APPS } from "@/system/registry";
 import { useWindowManager } from "@/system/WindowManager";
 import { useSettings } from "@/system/Settings";
+import { useContent } from "@/system/ContentContext";
 import { PixelIcon } from "@/system/pixel-icons";
-import { profile } from "@/data/profile";
 import { asset } from "@/system/types";
 
 function PocketClock() {
@@ -29,6 +29,7 @@ function PocketClock() {
 export function PocketShell() {
   const wm = useWindowManager();
   const { wallpaper } = useSettings();
+  const { site } = useContent();
   const [startOpen, setStartOpen] = useState(false);
 
   // The PDA shows one app at a time: the topmost open window.
@@ -41,12 +42,9 @@ export function PocketShell() {
   return (
     <div className="pocket" style={{ background: wallpaper.css }}>
       <div className="pocket-topbar">
-        <button
-          className="pocket-start"
-          onClick={() => setStartOpen((s) => !s)}
-        >
+        <button className="pocket-start" onClick={() => setStartOpen((s) => !s)}>
           <PixelIcon name="flag" size={16} />
-          <b>{top ? top.app.title : profile.pocketName}</b>
+          <b>{top ? top.app.title : site.pocketName}</b>
         </button>
         <PocketClock />
         {top ? (
@@ -79,7 +77,10 @@ export function PocketShell() {
       ) : null}
 
       {top ? (
-        <div className="pocket-app window-body" onClick={() => setStartOpen(false)}>
+        <div
+          className="pocket-app window-body"
+          onClick={() => setStartOpen(false)}
+        >
           <top.app.component windowId={top.id} />
         </div>
       ) : (
@@ -87,14 +88,14 @@ export function PocketShell() {
           <div className="pocket-today window">
             <div className="pocket-today-header">
               <img
-                src={asset(profile.avatar)}
-                alt={profile.name}
+                src={asset(site.avatar)}
+                alt={site.name}
                 className="pocket-avatar"
               />
               <div>
-                <b>{profile.name}</b>
-                <div className="pocket-today-sub">{profile.title}</div>
-                <div className="pocket-today-sub">{profile.affiliation}</div>
+                <b>{site.name}</b>
+                <div className="pocket-today-sub">{site.title}</div>
+                <div className="pocket-today-sub">{site.affiliation}</div>
               </div>
             </div>
           </div>

@@ -2,8 +2,8 @@
 
 import { APPS } from "@/system/registry";
 import { useWindowManager } from "@/system/WindowManager";
+import { useContent } from "@/system/ContentContext";
 import { PixelIcon } from "@/system/pixel-icons";
-import { profile } from "@/data/profile";
 
 export function StartMenu({
   onClose,
@@ -13,13 +13,14 @@ export function StartMenu({
   onShutdown: () => void;
 }) {
   const wm = useWindowManager();
+  const { site } = useContent();
 
   const items = APPS.filter((a) => a.startMenu);
 
   return (
     <div className="start-menu window">
       <div className="start-menu-banner">
-        <span>{profile.osName}</span>
+        <span>{site.osName}</span>
       </div>
       <div className="start-menu-items">
         {items.map((app) => (
@@ -38,7 +39,7 @@ export function StartMenu({
         <div className="start-menu-separator" />
         <a
           className="start-menu-item start-menu-link"
-          href={profile.socials.academicSite}
+          href={site.socials.academicSite}
           target="_blank"
           rel="noreferrer"
           onClick={onClose}

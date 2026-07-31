@@ -1,6 +1,6 @@
 "use client";
 
-import { projects } from "@/data/profile";
+import { useContent } from "@/system/ContentContext";
 import { PixelIcon } from "@/system/pixel-icons";
 import { useWindowManager } from "@/system/WindowManager";
 import { projectAppDescriptor } from "./ProjectsApp";
@@ -28,6 +28,7 @@ export const lazy100Player: AppDescriptor = {
 const GAME_SLUGS = ["cells-of-division", "gold-miner-rebirth", "catmario-gb"];
 
 export function GamesApp() {
+  const { projects } = useContent();
   const wm = useWindowManager();
 
   return (
@@ -39,14 +40,13 @@ export function GamesApp() {
       <div className="icon-grid">
         <button
           className="icon-grid-item"
-          onDoubleClick={() => wm.open(lazy100Player)}
           onClick={() => wm.open(lazy100Player)}
         >
           <PixelIcon name="joystick" size={32} />
           <span>Lazy-100 (play now!)</span>
         </button>
         {GAME_SLUGS.map((slug) => {
-          const p = projects.find((x) => x.slug === slug);
+          const p = projects.find((x) => x.meta.slug === slug);
           if (!p) return null;
           return (
             <button
@@ -55,7 +55,7 @@ export function GamesApp() {
               onClick={() => wm.open(projectAppDescriptor(p))}
             >
               <PixelIcon name="gameboy" size={32} />
-              <span>{p.name}</span>
+              <span>{p.meta.name}</span>
             </button>
           );
         })}

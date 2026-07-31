@@ -1,28 +1,30 @@
 "use client";
 
 import { useState } from "react";
-import { projects, type Project } from "@/data/profile";
+import type { ProjectContent, ProjectCategory } from "@/lib/content-types";
+import { useContent } from "@/system/ContentContext";
 import { PixelIcon } from "@/system/pixel-icons";
 import { useWindowManager } from "@/system/WindowManager";
+import { Markdown } from "@/components/Markdown";
 import type { AppDescriptor } from "@/system/types";
 
-const CATEGORY_LABELS: Record<string, string> = {
+const CATEGORY_LABELS: Record<ProjectCategory, string> = {
   work: "Engineering & Research",
   indie: "Indie Games",
   fun: "Just for Fun",
 };
 
-const CATEGORY_ICONS: Record<string, string> = {
+const CATEGORY_ICONS: Record<ProjectCategory, string> = {
   work: "flask",
   indie: "joystick",
   fun: "gameboy",
 };
 
-export function projectAppDescriptor(project: Project): AppDescriptor {
+export function projectAppDescriptor(project: ProjectContent): AppDescriptor {
   return {
-    id: `project-${project.slug}`,
-    title: project.name,
-    icon: CATEGORY_ICONS[project.category] ?? "folder",
+    id: `project-${project.meta.slug}`,
+    title: project.meta.name,
+    icon: CATEGORY_ICONS[project.meta.category] ?? "folder",
     component: function ProjectWindow() {
       return <ProjectPage project={project} />;
     },
@@ -31,10 +33,11 @@ export function projectAppDescriptor(project: Project): AppDescriptor {
 }
 
 export function ProjectsApp() {
+  const { projects } = useContent();
   const wm = useWindowManager();
   const [selected, setSelected] = useState<string | null>(null);
 
-  const categories: Project["category"][] = ["work", "indie", "fun"];
+  const categories: ProjectCategory[] = ["work", "indie", "fun"];
 
   return (
     <div className="app-body">
@@ -43,7 +46,7 @@ export function ProjectsApp() {
         this is a real desktop, after all.
       </p>
       {categories.map((cat) => {
-        const items = projects.filter((p) => p.category === cat);
+        const items = projects.filter((p) => p.meta.category === cat);
         if (items.length === 0) return null;
         return (
           <fieldset key={cat}>
@@ -51,17 +54,17 @@ export function ProjectsApp() {
             <div className="icon-grid">
               {items.map((p) => (
                 <button
-                  key={p.slug}
+                  key={p.meta.slug}
                   className={
                     "icon-grid-item" +
-                    (selected === p.slug ? " icon-grid-item-selected" : "")
+                    (selected === p.meta.slug ? " icon-grid-item-selected" : "")
                   }
-                  onClick={() => setSelected(p.slug)}
+                  onClick={() => setSelected(p.meta.slug)}
                   onDoubleClick={() => wm.open(projectAppDescriptor(p))}
-                  title={p.blurb}
+                  title={p.meta.blurb}
                 >
                   <PixelIcon name={CATEGORY_ICONS[cat]} size={32} />
-                  <span>{p.name}</span>
+                  <span>{p.meta.name}</span>
                 </button>
               ))}
             </div>
@@ -72,9 +75,9 @@ export function ProjectsApp() {
   );
 }
 
-function ProjectEmbed({ project }: { project: Project }) {
+function ProjectEmbed({ project }: { project: ProjectContent }) {
   const [playing, setPlaying] = useState(false);
-  const embed = project.embed;
+  const embed = project.meta.embed;
   if (!embed) return null;
 
   switch (embed.kind) {
@@ -84,7 +87,7 @@ function ProjectEmbed({ project }: { project: Project }) {
           className="embed-widget"
           src={`https://store.steampowered.com/widget/${embed.appId}/`}
           height={190}
-          title={`${project.name} on Steam`}
+          title={`${project.meta.name} on Steam`}
         />
       );
     case "itch":
@@ -103,7 +106,7 @@ function ProjectEmbed({ project }: { project: Project }) {
         <iframe
           className="embed-video"
           src={`https://www.youtube.com/embed/${embed.videoId}`}
-          title={`${project.name} showcase video`}
+          title={`${project.meta.name} showcase video`}
           allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
           allowFullScreen
         />
@@ -113,33 +116,28 @@ function ProjectEmbed({ project }: { project: Project }) {
         <iframe
           className="embed-site"
           src={embed.url}
-          title={project.name}
+          title={project.meta.name}
           allow="fullscreen; gamepad; autoplay"
         />
       ) : (
         <button className="play-button" onClick={() => setPlaying(true)}>
-          ▶ Run {project.name} in this window
+          ▶ Run {project.meta.name} in this window
         </button>
       );
   }
 }
 
-export function ProjectPage({ project }: { project: Project }) {
+export function ProjectPage({ project }: { project: ProjectContent }) {
   return (
     <div className="app-body">
-      <h1 className="project-title">{project.name}</h1>
+      <h1 className="project-title">{project.meta.name}</h1>
       <p className="project-blurb">
-        <i>{project.blurb}</i>
+        <i>{project.meta.blurb}</i>
       </p>
       <ProjectEmbed project={project} />
-      {project.paragraphs.map((p, i) => (
-        <div key={i}>
-          {p.heading ? <h3 className="project-heading">{p.heading}</h3> : null}
-          <p>{p.text}</p>
-        </div>
-      ))}
+      <Markdown>{project.body}</Markdown>
       <div className="toolbar-row">
-        {project.links.map((l) => (
+        {project.meta.links.map((l) => (
           <a
             key={l.label}
             className="btn-link"
