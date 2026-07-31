@@ -25,15 +25,89 @@ function IconButton({
   );
 }
 
-export function PublicationsApp() {
-  const { publications } = useContent();
-  const [expanded, setExpanded] = useState<string | null>(null);
-  const [bibOpen, setBibOpen] = useState<string | null>(null);
+// Highlight the site owner's name in the author list.
+function Authors({ authors, self }: { authors: string; self: string }) {
+  const idx = authors.indexOf(self);
+  if (idx < 0) return <p className="pub-authors">{authors}</p>;
+  return (
+    <p className="pub-authors">
+      {authors.slice(0, idx)}
+      <span className="pub-self">{self}</span>
+      {authors.slice(idx + self.length)}
+    </p>
+  );
+}
+
+// Citation panel with a copy button (bottom-right).
+function CitePanel({ text }: { text: string }) {
   const [copied, setCopied] = useState(false);
+  return (
+    <div className="sunken-panel pub-bibtex-wrap">
+      <pre className="pub-bibtex">{text.trim()}</pre>
+      <button
+        className="pub-bibtex-copy"
+        onClick={() => {
+          navigator.clipboard
+            .writeText(text.trim())
+            .then(() => setCopied(true))
+            .catch(() => setCopied(false));
+        }}
+      >
+        {copied ? "Copied!" : "Copy"}
+      </button>
+    </div>
+  );
+}
+
+type Panel = { id: string; kind: "abstract" | "bibtex" | "gbt" };
+
+export function PublicationsApp() {
+  const { publications, site } = useContent();
+  const [panel, setPanel] = useState<Panel | null>(null);
+  const [query, setQuery] = useState("");
+  const [year, setYear] = useState("all");
+
+  const years = [...new Set(publications.map((p) => p.meta.year))].sort(
+    (a, b) => b - a
+  );
+
+  const q = query.trim().toLowerCase();
+  const filtered = publications.filter(({ meta, body }) => {
+    if (year !== "all" && String(meta.year) !== year) return false;
+    if (!q) return true;
+    return [meta.title, meta.authors, meta.venue, meta.abbr ?? "", body]
+      .join(" ")
+      .toLowerCase()
+      .includes(q);
+  });
+
+  const togglePanel = (id: string, kind: Panel["kind"]) =>
+    setPanel(panel?.id === id && panel.kind === kind ? null : { id, kind });
+
+  const isOpen = (id: string, kind: Panel["kind"]) =>
+    panel?.id === id && panel.kind === kind;
 
   return (
     <div className="app-body">
-      {publications.map(({ meta, body }) => {
+      <div className="toolbar-row pub-toolbar">
+        <input
+          className="pub-search"
+          placeholder="Search title, author, venue…"
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          spellCheck={false}
+        />
+        <select value={year} onChange={(e) => setYear(e.target.value)}>
+          <option value="all">All years</option>
+          {years.map((y) => (
+            <option key={y} value={String(y)}>
+              {y}
+            </option>
+          ))}
+        </select>
+      </div>
+
+      {filtered.map(({ meta, body }) => {
         const githubUrl = meta.github
           ? meta.github.startsWith("http")
             ? meta.github
@@ -57,14 +131,43 @@ export function PublicationsApp() {
                   <span className="pub-abbr">{meta.abbr}</span>
                 ) : null}
                 <b>{meta.title}</b>
-                <p className="pub-authors">{meta.authors}</p>
+                <Authors authors={meta.authors} self={site.name} />
                 <p className="pub-venue">
                   <i>{meta.venue}</i>
-                  {meta.doi ? <> · DOI: {meta.doi}</> : null}
                 </p>
               </div>
             </div>
             <div className="toolbar-row">
+              {body ? (
+                <button onClick={() => togglePanel(meta.id, "abstract")}>
+                  ABS
+                </button>
+              ) : null}
+              {meta.doi ? (
+                <IconButton
+                  href={`https://doi.org/${meta.doi}`}
+                  icon="globe"
+                  label="DOI"
+                />
+              ) : null}
+              {meta.links.map((e) => (
+                <IconButton
+                  key={e.label}
+                  href={e.url}
+                  icon={e.icon ?? "globe"}
+                  label={e.label}
+                />
+              ))}
+              {meta.bibtex ? (
+                <button onClick={() => togglePanel(meta.id, "bibtex")}>
+                  BIB
+                </button>
+              ) : null}
+              {meta.gbt ? (
+                <button onClick={() => togglePanel(meta.id, "gbt")}>
+                  GB/T 7714
+                </button>
+              ) : null}
               {meta.pdf ? (
                 <IconButton href={asset(meta.pdf)} icon="document" label="PDF" />
               ) : null}
@@ -78,51 +181,8 @@ export function PublicationsApp() {
               {githubUrl ? (
                 <IconButton href={githubUrl} icon="github" label="Code" />
               ) : null}
-              {meta.links.map((e) => (
-                <IconButton
-                  key={e.label}
-                  href={e.url}
-                  icon={e.icon ?? "globe"}
-                  label={e.label}
-                />
-              ))}
-              {body ? (
-                <button
-                  onClick={() =>
-                    setExpanded(expanded === meta.id ? null : meta.id)
-                  }
-                >
-                  {expanded === meta.id ? "Hide abstract" : "Abstract"}
-                </button>
-              ) : null}
-              {meta.bibtex ? (
-                <button
-                  onClick={() => {
-                    setBibOpen(bibOpen === meta.id ? null : meta.id);
-                    setCopied(false);
-                  }}
-                >
-                  BibTeX
-                </button>
-              ) : null}
             </div>
-            {bibOpen === meta.id && meta.bibtex ? (
-              <div className="sunken-panel pub-bibtex-wrap">
-                <pre className="pub-bibtex">{meta.bibtex.trim()}</pre>
-                <button
-                  className="pub-bibtex-copy"
-                  onClick={() => {
-                    navigator.clipboard
-                      .writeText(meta.bibtex!.trim())
-                      .then(() => setCopied(true))
-                      .catch(() => setCopied(false));
-                  }}
-                >
-                  {copied ? "Copied!" : "Copy"}
-                </button>
-              </div>
-            ) : null}
-            {expanded === meta.id ? (
+            {isOpen(meta.id, "abstract") ? (
               <div className="sunken-panel pub-abstract">
                 {meta.teaser ? (
                   // eslint-disable-next-line @next/next/no-img-element
@@ -136,9 +196,18 @@ export function PublicationsApp() {
                 <Markdown>{body}</Markdown>
               </div>
             ) : null}
+            {isOpen(meta.id, "bibtex") && meta.bibtex ? (
+              <CitePanel text={meta.bibtex} />
+            ) : null}
+            {isOpen(meta.id, "gbt") && meta.gbt ? (
+              <CitePanel text={meta.gbt} />
+            ) : null}
           </fieldset>
         );
       })}
+      {filtered.length === 0 ? (
+        <p className="hint-text">No publications match.</p>
+      ) : null}
     </div>
   );
 }

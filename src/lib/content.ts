@@ -69,6 +69,7 @@ export function loadSiteContent(): SiteContent {
           doi: d.doi,
           pdf: d.pdf,
           bibtex: d.bibtex,
+          gbt: d.gbt,
           preview: d.preview,
           teaser: d.teaser,
           projectPage: d.projectPage,

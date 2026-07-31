@@ -55,6 +55,7 @@ export interface PublicationMeta {
   doi?: string;
   pdf?: string;
   bibtex?: string; // raw BibTeX entry shown behind the BibTeX button
+  gbt?: string; // GB/T 7714 citation string (Chinese standard)
   preview?: string; // journal/conference cover thumbnail
   teaser?: string; // optional figure shown with the abstract
   projectPage?: string; // dedicated project-page button

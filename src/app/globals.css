@@ -479,8 +479,27 @@ a {
 
 .pub-bibtex-copy {
   position: absolute;
-  top: 4px;
+  bottom: 4px;
   right: 4px;
+}
+
+.pub-bibtex {
+  padding-bottom: 32px;
+}
+
+.pub-toolbar {
+  margin-top: 0;
+}
+
+.pub-search {
+  flex: 1;
+  min-width: 0;
+  height: 24px;
+}
+
+.pub-self {
+  font-weight: bold;
+  text-decoration: underline;
 }
 
 .pub-authors,
