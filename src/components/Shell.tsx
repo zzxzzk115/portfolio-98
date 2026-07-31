@@ -27,6 +27,11 @@ export function Shell({ content }: { content: SiteContent }) {
     // matchMedia change events can be missed while the tab is hidden;
     // re-evaluate on resize as a fallback.
     window.addEventListener("resize", update);
+    // The browser's own context menu never belongs in this OS. Custom
+    // menus attach via React handlers and still run; this only suppresses
+    // the native fallback (iframes are separate documents and unaffected).
+    const suppressNative = (e: Event) => e.preventDefault();
+    window.addEventListener("contextmenu", suppressNative);
     const bootTimer = setTimeout(() => setPower("on"), 900);
     const onBsod = () => {
       setPower("bsod");
@@ -42,6 +47,7 @@ export function Shell({ content }: { content: SiteContent }) {
     };
     window.addEventListener("pointerdown", onFirstGesture);
     return () => {
+      window.removeEventListener("contextmenu", suppressNative);
       window.removeEventListener("pointerdown", onFirstGesture);
       mq.removeEventListener("change", update);
       window.removeEventListener("resize", update);
