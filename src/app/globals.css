@@ -437,8 +437,8 @@ a {
 
 .project-thumb {
   width: 132px;
-  height: 82px;
-  object-fit: cover;
+  height: 88px;
+  object-fit: contain;
   border: 2px solid;
   border-color: #808080 #fff #fff #808080;
   background: #000;
