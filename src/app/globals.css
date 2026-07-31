@@ -462,7 +462,6 @@ a {
 }
 
 .pub-bibtex-wrap {
-  position: relative;
   margin-top: 6px;
   padding: 0;
 }
@@ -472,19 +471,43 @@ a {
   padding: 8px;
   font-family: "Courier New", monospace;
   font-size: 12px;
-  white-space: pre;
-  overflow-x: auto;
+  /* Wrap long single-line citations (GB/T 7714) instead of clipping. */
+  white-space: pre-wrap;
+  word-break: break-all;
   user-select: text;
 }
 
-.pub-bibtex-copy {
-  position: absolute;
-  bottom: 4px;
-  right: 4px;
+.find-app {
+  padding: 6px;
+  gap: 4px;
 }
 
-.pub-bibtex {
-  padding-bottom: 32px;
+.find-bar {
+  margin: 0;
+  align-items: center;
+}
+
+.find-hint {
+  margin: 0;
+  flex: 0 0 auto;
+}
+
+.find-results {
+  flex: 1;
+}
+
+.find-name-cell {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  white-space: nowrap;
+}
+
+.pub-cite-actions {
+  display: flex;
+  justify-content: flex-end;
+  padding: 4px;
+  border-top: 1px solid #d4d0c8;
 }
 
 .pub-toolbar {

@@ -12,6 +12,7 @@ import { TaskManagerApp } from "@/apps/TaskManagerApp";
 import { OQ2000App } from "@/apps/OQ2000App";
 import { DosApp } from "@/apps/DosApp";
 import { explorerAppDescriptor } from "@/apps/ExplorerApp";
+import { FindApp } from "@/apps/FindApp";
 
 // Folder shortcuts are Explorer windows pinned to a path.
 const shortcut = (
@@ -65,6 +66,16 @@ export const APPS: AppDescriptor[] = [
     component: PublicationsApp,
     defaultSize: { width: 600, height: 440 },
     desktop: true,
+    startMenu: true,
+    pocket: true,
+  },
+  {
+    id: "find",
+    title: "Find: Files or Folders",
+    icon: "search",
+    component: FindApp,
+    defaultSize: { width: 560, height: 420 },
+    desktop: false,
     startMenu: true,
     pocket: true,
   },

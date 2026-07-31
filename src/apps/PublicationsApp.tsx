@@ -44,17 +44,18 @@ function CitePanel({ text }: { text: string }) {
   return (
     <div className="sunken-panel pub-bibtex-wrap">
       <pre className="pub-bibtex">{text.trim()}</pre>
-      <button
-        className="pub-bibtex-copy"
-        onClick={() => {
-          navigator.clipboard
-            .writeText(text.trim())
-            .then(() => setCopied(true))
-            .catch(() => setCopied(false));
-        }}
-      >
-        {copied ? "Copied!" : "Copy"}
-      </button>
+      <div className="pub-cite-actions">
+        <button
+          onClick={() => {
+            navigator.clipboard
+              .writeText(text.trim())
+              .then(() => setCopied(true))
+              .catch(() => setCopied(false));
+          }}
+        >
+          {copied ? "Copied!" : "Copy"}
+        </button>
+      </div>
     </div>
   );
 }

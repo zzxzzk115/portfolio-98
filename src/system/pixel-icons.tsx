@@ -290,6 +290,27 @@ export const ICONS: Record<string, PixelArt> = {
     ],
     P
   ),
+  search: art(
+    [
+      "                ",
+      "    kkkk        ",
+      "   kwwwwk       ",
+      "  kwwkkwwk      ",
+      "  kwk  kwk      ",
+      "  kwk  kwk      ",
+      "  kwwkkwwk      ",
+      "   kwwwwkk      ",
+      "    kkkkkkk     ",
+      "        kkkk    ",
+      "         kkkk   ",
+      "          kkkk  ",
+      "           kkk  ",
+      "                ",
+      "                ",
+      "                ",
+    ],
+    P
+  ),
   user: art(
     [
       "                ",
