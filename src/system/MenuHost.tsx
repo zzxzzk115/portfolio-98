@@ -7,6 +7,7 @@ import {
   createContext,
   useCallback,
   useContext,
+  useEffect,
   useMemo,
   useState,
   type ReactNode,
@@ -38,6 +39,18 @@ export function MenuHost({ children }: { children: ReactNode }) {
     []
   );
   const closeMenu = useCallback(() => setMenu(null), []);
+
+  // Any click outside the menu dismisses it — like a real OS.
+  useEffect(() => {
+    if (!menu) return;
+    const onPointerDown = (e: PointerEvent) => {
+      if (!(e.target as HTMLElement).closest?.(".context-menu")) {
+        setMenu(null);
+      }
+    };
+    window.addEventListener("pointerdown", onPointerDown, true);
+    return () => window.removeEventListener("pointerdown", onPointerDown, true);
+  }, [menu]);
 
   const api = useMemo(() => ({ showMenu, closeMenu }), [showMenu, closeMenu]);
 

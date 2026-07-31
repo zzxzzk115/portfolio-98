@@ -91,6 +91,79 @@ export function Desktop({ onShutdown }: { onShutdown: () => void }) {
     setTimeout(() => setRefreshing(false), 150);
   };
 
+  // Fallback edit menu for window content: Cut/Copy/Paste/Select All.
+  const showEditMenu = (x: number, y: number, target: HTMLElement) => {
+    const editable = target.closest("input, textarea") as
+      | HTMLInputElement
+      | HTMLTextAreaElement
+      | null;
+    const hasInputSelection =
+      !!editable &&
+      (editable.selectionStart ?? 0) !== (editable.selectionEnd ?? 0);
+    const hasTextSelection =
+      (window.getSelection()?.toString().length ?? 0) > 0;
+    const canCopy = editable ? hasInputSelection : hasTextSelection;
+
+    const paste = async () => {
+      if (!editable) return;
+      try {
+        const text = await navigator.clipboard.readText();
+        const start = editable.selectionStart ?? editable.value.length;
+        const end = editable.selectionEnd ?? editable.value.length;
+        const next =
+          editable.value.slice(0, start) + text + editable.value.slice(end);
+        // Go through the native setter so React's onChange fires.
+        const proto =
+          editable instanceof HTMLTextAreaElement
+            ? window.HTMLTextAreaElement.prototype
+            : window.HTMLInputElement.prototype;
+        Object.getOwnPropertyDescriptor(proto, "value")?.set?.call(
+          editable,
+          next
+        );
+        editable.dispatchEvent(new Event("input", { bubbles: true }));
+        editable.setSelectionRange(start + text.length, start + text.length);
+      } catch {
+        // clipboard permission denied — nothing to paste
+      }
+    };
+
+    showMenu(x, y, [
+      ...(editable
+        ? [
+            {
+              label: "Cut",
+              disabled: !hasInputSelection,
+              onClick: () => document.execCommand("cut"),
+            },
+          ]
+        : []),
+      {
+        label: "Copy",
+        disabled: !canCopy,
+        onClick: () => document.execCommand("copy"),
+      },
+      ...(editable
+        ? [{ label: "Paste", onClick: () => void paste() }]
+        : []),
+      {
+        label: "Select All",
+        onClick: () => {
+          if (editable) {
+            editable.select();
+            return;
+          }
+          const body = target.closest(".window-body") ?? target;
+          const range = document.createRange();
+          range.selectNodeContents(body);
+          const sel = window.getSelection();
+          sel?.removeAllRanges();
+          sel?.addRange(range);
+        },
+      },
+    ]);
+  };
+
   const showDesktopMenu = (x: number, y: number) => {
     showMenu(x, y, [
       { label: "Refresh", onClick: refreshDesktop },
@@ -122,10 +195,15 @@ export function Desktop({ onShutdown }: { onShutdown: () => void }) {
       className="desktop"
       style={{ background: wallpaper.css }}
       onContextMenu={(e) => {
-        // Windows keep the browser's native context menu inside their body;
-        // icons/taskbar/widgets handle their own menus.
-        if ((e.target as HTMLElement).closest(".win98-window")) return;
+        // The browser menu never shows inside the "OS". Specific targets
+        // (icons, title bars, explorer items…) stopPropagation with their
+        // own menus; window content falls back to an edit menu.
         e.preventDefault();
+        const target = e.target as HTMLElement;
+        if (target.closest(".win98-window")) {
+          showEditMenu(e.clientX, e.clientY, target);
+          return;
+        }
         setStartOpen(false);
         showDesktopMenu(e.clientX, e.clientY);
       }}

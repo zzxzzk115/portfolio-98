@@ -42,6 +42,9 @@ export function ContextMenu({
           <button
             className="start-menu-item context-menu-item"
             disabled={item.disabled}
+            // Keep focus and text selection where they were, so edit
+            // actions (Copy/Cut) operate on the original selection.
+            onPointerDown={(e) => e.preventDefault()}
             onClick={() => {
               if (item.disabled) return;
               item.onClick?.();
