@@ -7,6 +7,7 @@ import {
   type PointerEvent as ReactPointerEvent,
 } from "react";
 import { useWidgets, WIDGET_DEFS, type WidgetId } from "@/system/Widgets";
+import { useMenu } from "@/system/MenuHost";
 import { ClockWidget } from "./widgets/ClockWidget";
 import { CalendarWidget } from "./widgets/CalendarWidget";
 import { SysmonWidget } from "./widgets/SysmonWidget";
@@ -30,7 +31,8 @@ function useViewport() {
 }
 
 function WidgetCard({ id, title }: { id: WidgetId; title: string }) {
-  const { widgets, move } = useWidgets();
+  const { widgets, move, toggle } = useWidgets();
+  const { showMenu } = useMenu();
   const state = widgets[id];
   const { w: vw, h: vh } = useViewport();
   const drag = useRef<{
@@ -81,6 +83,13 @@ function WidgetCard({ id, title }: { id: WidgetId; title: string }) {
       onPointerDown={onPointerDown}
       onPointerMove={onPointerMove}
       onPointerUp={onPointerUp}
+      onContextMenu={(e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        showMenu(e.clientX, e.clientY, [
+          { label: `Hide ${title}`, onClick: () => toggle(id) },
+        ]);
+      }}
       title={title}
     >
       <Body />

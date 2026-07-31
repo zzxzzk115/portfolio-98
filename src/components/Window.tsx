@@ -7,10 +7,12 @@ import {
 } from "react";
 import type { WindowState } from "@/system/types";
 import { useWindowManager } from "@/system/WindowManager";
+import { useMenu } from "@/system/MenuHost";
 import { PixelIcon } from "@/system/pixel-icons";
 
 export function Win98Window({ win }: { win: WindowState }) {
   const wm = useWindowManager();
+  const { showMenu } = useMenu();
   const rootRef = useRef<HTMLDivElement>(null);
   const fitDone = useRef(false);
 
@@ -162,6 +164,29 @@ export function Win98Window({ win }: { win: WindowState }) {
         onPointerMove={onPointerMove}
         onPointerUp={onPointerUp}
         onDoubleClick={() => wm.toggleMaximize(win.id)}
+        onContextMenu={(e) => {
+          // Classic system menu on the title bar.
+          e.preventDefault();
+          e.stopPropagation();
+          showMenu(e.clientX, e.clientY, [
+            {
+              label: "Restore",
+              disabled: !win.maximized,
+              onClick: () => wm.toggleMaximize(win.id),
+            },
+            {
+              label: "Minimize",
+              onClick: () => wm.minimize(win.id),
+            },
+            {
+              label: "Maximize",
+              disabled: win.maximized,
+              onClick: () => wm.toggleMaximize(win.id),
+              separatorAfter: true,
+            },
+            { label: "Close", onClick: () => wm.close(win.id) },
+          ]);
+        }}
       >
         <div className="title-bar-icon">
           <PixelIcon name={win.app.icon} size={16} />

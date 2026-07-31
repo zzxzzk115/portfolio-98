@@ -2,10 +2,15 @@
 
 import { useEffect, useState } from "react";
 import { useWindowManager } from "@/system/WindowManager";
+import { useMenu } from "@/system/MenuHost";
+import { useWidgets } from "@/system/Widgets";
+import { APPS } from "@/system/registry";
 import { PixelIcon } from "@/system/pixel-icons";
 import { soundEnabled, setSoundEnabled, playSound } from "@/system/sounds";
 
 function Clock() {
+  const { showMenu } = useMenu();
+  const { widgets, toggle } = useWidgets();
   const [time, setTime] = useState<string>("");
   useEffect(() => {
     const tick = () =>
@@ -19,7 +24,25 @@ function Clock() {
     const id = setInterval(tick, 10_000);
     return () => clearInterval(id);
   }, []);
-  return <div className="taskbar-clock">{time}</div>;
+  return (
+    <div
+      className="taskbar-clock"
+      title={new Date().toDateString()}
+      onContextMenu={(e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        showMenu(e.clientX, e.clientY - 60, [
+          {
+            label: "Adjust Date/Time",
+            checked: widgets.calendar.enabled,
+            onClick: () => toggle("calendar"),
+          },
+        ]);
+      }}
+    >
+      {time}
+    </div>
+  );
 }
 
 function SpeakerToggle() {
@@ -44,22 +67,28 @@ function SpeakerToggle() {
 export function Taskbar({
   startOpen,
   onToggleStart,
-  onContextMenu,
 }: {
   startOpen: boolean;
   onToggleStart: () => void;
-  onContextMenu?: (x: number, y: number) => void;
 }) {
   const wm = useWindowManager();
+  const { showMenu } = useMenu();
 
   return (
     <div
       className="taskbar"
       onContextMenu={(e) => {
-        if (!onContextMenu) return;
         e.preventDefault();
         e.stopPropagation();
-        onContextMenu(e.clientX, e.clientY);
+        showMenu(e.clientX, e.clientY - 40, [
+          {
+            label: "Task Manager",
+            onClick: () => {
+              const taskmgr = APPS.find((a) => a.id === "taskmgr");
+              if (taskmgr) wm.open(taskmgr);
+            },
+          },
+        ]);
       }}
     >
       <button
@@ -81,6 +110,24 @@ export function Taskbar({
                 : "")
             }
             onClick={() => wm.taskbarClick(w.id)}
+            onContextMenu={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              showMenu(e.clientX, e.clientY - 90, [
+                {
+                  label: "Restore",
+                  disabled: !w.minimized && wm.focusedId === w.id,
+                  onClick: () => wm.focus(w.id),
+                },
+                {
+                  label: "Minimize",
+                  disabled: w.minimized,
+                  onClick: () => wm.minimize(w.id),
+                  separatorAfter: true,
+                },
+                { label: "Close", onClick: () => wm.close(w.id) },
+              ]);
+            }}
           >
             <PixelIcon name={w.app.icon} size={16} />
             <span>{w.app.title}</span>

@@ -8,6 +8,7 @@ import { ContentProvider } from "@/system/ContentContext";
 import type { SiteContent } from "@/lib/content-types";
 import { Desktop } from "./Desktop";
 import { PocketShell } from "./PocketShell";
+import { MenuHost } from "@/system/MenuHost";
 import { playSound } from "@/system/sounds";
 
 type Power = "booting" | "on" | "off" | "bsod";
@@ -83,12 +84,14 @@ export function Shell({ content }: { content: SiteContent }) {
             {isPocket ? (
               <PocketShell />
             ) : (
-              <Desktop
-                onShutdown={() => {
-                  playSound("shutdown");
-                  setPower("off");
-                }}
-              />
+              <MenuHost>
+                <Desktop
+                  onShutdown={() => {
+                    playSound("shutdown");
+                    setPower("off");
+                  }}
+                />
+              </MenuHost>
             )}
             {power === "bsod" ? (
               // Overlay, not a tree swap — open windows survive the crash.
