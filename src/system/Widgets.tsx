@@ -56,20 +56,9 @@ export function WidgetsProvider({ children }: { children: ReactNode }) {
   const [widgets, setWidgets] = useState<WidgetsState>(defaultState);
 
   useEffect(() => {
-    // Positions may have been saved on a differently-sized viewport —
-    // clamp everything back on screen.
-    const clamp = (s: WidgetState): WidgetState => ({
-      ...s,
-      x: Math.max(-60, Math.min(s.x, window.innerWidth - 120)),
-      y: Math.max(0, Math.min(s.y, window.innerHeight - 120)),
-    });
-    const clampAll = () =>
-      setWidgets((w) => ({
-        clock: clamp(w.clock),
-        calendar: clamp(w.calendar),
-        sysmon: clamp(w.sysmon),
-      }));
-
+    // Stored positions are never mutated on resize — clamping happens at
+    // render time in WidgetsLayer, so shrinking the viewport (e.g. desktop →
+    // pocket → desktop) doesn't permanently drag widgets out of place.
     try {
       const saved = localStorage.getItem(STORAGE_KEY);
       if (saved) {
@@ -79,9 +68,6 @@ export function WidgetsProvider({ children }: { children: ReactNode }) {
     } catch {
       // corrupted storage: keep defaults
     }
-    clampAll();
-    window.addEventListener("resize", clampAll);
-    return () => window.removeEventListener("resize", clampAll);
   }, []);
 
   const api = useMemo<WidgetsApi>(() => {

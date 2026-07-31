@@ -8,13 +8,15 @@ import {
   useState,
   type ReactNode,
 } from "react";
+import { PLASMA_FRAG, DRIFT_FRAG, RIPPLE_FRAG } from "@/lib/shaders";
 
 export interface Wallpaper {
   id: string;
   name: string;
-  // CSS background shorthand value. Image wallpapers (e.g. future paper
-  // figures dropped into /public/wallpapers) can use url(...) here.
+  // CSS background shorthand — also the fallback when WebGL is unavailable.
   css: string;
+  // When set, the wallpaper renders as a fullscreen fragment shader.
+  frag?: string;
 }
 
 export const WALLPAPERS: Wallpaper[] = [
@@ -34,21 +36,25 @@ export const WALLPAPERS: Wallpaper[] = [
     name: "Setup Grid",
     css: "repeating-linear-gradient(0deg, #0000aa 0 2px, transparent 2px 24px), repeating-linear-gradient(90deg, #0000aa 0 2px, transparent 2px 24px), #000060",
   },
-  {
-    id: "plum",
-    name: "Plum",
-    css: "#605080",
-  },
-  {
-    id: "desert",
-    name: "Desert",
-    css: "linear-gradient(#c0885a, #d9a566)",
-  },
+  { id: "plum", name: "Plum", css: "#605080" },
+  { id: "desert", name: "Desert", css: "linear-gradient(#c0885a, #d9a566)" },
+  // Animated (GLSL) — hand-written shaders, as is proper for a graphics PhD.
+  { id: "plasma", name: "★ Plasma (GLSL)", css: "#204060", frag: PLASMA_FRAG },
+  { id: "drift", name: "★ Drift (GLSL)", css: "#003338", frag: DRIFT_FRAG },
+  { id: "ripple", name: "★ Ripple (GLSL)", css: "#052540", frag: RIPPLE_FRAG },
 ];
+
+export type ScreensaverMode = "none" | "starfield" | "tunnel" | "logo";
 
 interface SettingsApi {
   wallpaper: Wallpaper;
   setWallpaperId: (id: string) => void;
+  crt: boolean;
+  setCrt: (on: boolean) => void;
+  screensaverMode: ScreensaverMode;
+  setScreensaverMode: (m: ScreensaverMode) => void;
+  screensaverDelay: number; // seconds
+  setScreensaverDelay: (s: number) => void;
 }
 
 const SettingsContext = createContext<SettingsApi | null>(null);
@@ -59,29 +65,56 @@ export function useSettings(): SettingsApi {
   return ctx;
 }
 
-const STORAGE_KEY = "win98-wallpaper";
+const WP_KEY = "win98-wallpaper";
+const CRT_KEY = "win98-crt";
+const SS_MODE_KEY = "win98-ss-mode";
+const SS_DELAY_KEY = "win98-ss-delay";
 
 export function SettingsProvider({ children }: { children: ReactNode }) {
   const [wallpaperId, setWallpaperIdState] = useState("teal");
+  const [crt, setCrtState] = useState(false);
+  const [screensaverMode, setSsModeState] =
+    useState<ScreensaverMode>("starfield");
+  const [screensaverDelay, setSsDelayState] = useState(90);
 
   useEffect(() => {
-    const saved = localStorage.getItem(STORAGE_KEY);
-    if (saved && WALLPAPERS.some((w) => w.id === saved)) {
-      setWallpaperIdState(saved);
+    const wp = localStorage.getItem(WP_KEY);
+    if (wp && WALLPAPERS.some((w) => w.id === wp)) setWallpaperIdState(wp);
+    setCrtState(localStorage.getItem(CRT_KEY) === "on");
+    const mode = localStorage.getItem(SS_MODE_KEY) as ScreensaverMode | null;
+    if (mode && ["none", "starfield", "tunnel", "logo"].includes(mode)) {
+      setSsModeState(mode);
     }
+    const delay = Number(localStorage.getItem(SS_DELAY_KEY));
+    if (delay >= 10) setSsDelayState(delay);
   }, []);
 
-  const api = useMemo(() => {
+  const api = useMemo<SettingsApi>(() => {
     const wallpaper =
       WALLPAPERS.find((w) => w.id === wallpaperId) ?? WALLPAPERS[0];
     return {
       wallpaper,
-      setWallpaperId: (id: string) => {
+      setWallpaperId: (id) => {
         setWallpaperIdState(id);
-        localStorage.setItem(STORAGE_KEY, id);
+        localStorage.setItem(WP_KEY, id);
+      },
+      crt,
+      setCrt: (on) => {
+        setCrtState(on);
+        localStorage.setItem(CRT_KEY, on ? "on" : "off");
+      },
+      screensaverMode,
+      setScreensaverMode: (m) => {
+        setSsModeState(m);
+        localStorage.setItem(SS_MODE_KEY, m);
+      },
+      screensaverDelay,
+      setScreensaverDelay: (s) => {
+        setSsDelayState(s);
+        localStorage.setItem(SS_DELAY_KEY, String(s));
       },
     };
-  }, [wallpaperId]);
+  }, [wallpaperId, crt, screensaverMode, screensaverDelay]);
 
   return (
     <SettingsContext.Provider value={api}>{children}</SettingsContext.Provider>

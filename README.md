@@ -6,7 +6,8 @@
 - 📱 **Mobile**: automatically switches to a retro **Pocket PC / PDA shell** ("Pocket Portfolio-98") — top bar, Today screen, full-screen apps
 - 🎨 **Replaceable wallpaper** via Display Properties (persisted in localStorage)
 - 🕹️ **Games as apps**: the [Lazy-100](https://github.com/zzxzzk115/Lazy-100) fantasy console runs embedded in a window
-- 📄 CV, publications, and projects rendered from Markdown files in `content/`
+- 📄 CV, publications, projects, and blog posts rendered from Markdown files in `content/` (RSS at `/feed.xml`)
+- 🐧 OQ2000 buddy list (friend links), MS-DOS Prompt, screensavers, GLSL animated wallpapers, dial-up easter egg, and an unhelpful assistant
 
 ## Development
 

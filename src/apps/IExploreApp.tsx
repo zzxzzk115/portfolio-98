@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { playSound, stopModem } from "@/system/sounds";
 
 const HOME = "https://zzxzzk115.github.io/";
 
@@ -17,7 +18,63 @@ function normalize(url: string): string {
   return `https://${t}`;
 }
 
+const DIAL_KEY = "win98-dialed-up";
+const DIAL_STEPS = [
+  "Dialing 0113 555 0198...",
+  "Verifying username and password...",
+  "Registering your computer on the network...",
+  "Connected at 56,000 bps!",
+];
+
+function DialUp({ onDone }: { onDone: () => void }) {
+  const [step, setStep] = useState(0);
+
+  useEffect(() => {
+    playSound("modem");
+    const id = setInterval(() => {
+      setStep((s) => {
+        if (s >= DIAL_STEPS.length - 1) {
+          clearInterval(id);
+          setTimeout(onDone, 700);
+          return s;
+        }
+        return s + 1;
+      });
+    }, 900);
+    return () => {
+      clearInterval(id);
+      stopModem();
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  return (
+    <div className="dialup">
+      <div className="window dialup-dialog">
+        <div className="title-bar">
+          <div className="title-bar-text">Dial-up Networking</div>
+        </div>
+        <div className="window-body dialup-body">
+          <p>Connecting to Leeds Campus ISP…</p>
+          <p className="dialup-step">{DIAL_STEPS[step]}</p>
+          <div className="boot-bar dialup-bar">
+            <div className="boot-bar-fill" />
+          </div>
+          <div className="toolbar-row toolbar-row-right">
+            <button onClick={onDone}>Skip</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export function IExploreApp() {
+  const [dialing, setDialing] = useState(
+    () =>
+      typeof window !== "undefined" &&
+      !sessionStorage.getItem(DIAL_KEY)
+  );
   const [history, setHistory] = useState<string[]>([HOME]);
   const [pos, setPos] = useState(0);
   const [address, setAddress] = useState(HOME);
@@ -39,6 +96,20 @@ export function IExploreApp() {
     setPos(next);
     setAddress(history[next]);
   };
+
+  if (dialing) {
+    return (
+      <div className="app-body app-body-fill ie-app">
+        <DialUp
+          onDone={() => {
+            sessionStorage.setItem(DIAL_KEY, "1");
+            stopModem();
+            setDialing(false);
+          }}
+        />
+      </div>
+    );
+  }
 
   return (
     <div className="app-body app-body-fill ie-app">

@@ -10,6 +10,7 @@ import { PixelIcon } from "@/system/pixel-icons";
 import { asset } from "@/system/types";
 import { CalendarWidget } from "./widgets/CalendarWidget";
 import { SysmonWidget } from "./widgets/SysmonWidget";
+import { ShaderCanvas } from "@/lib/glview";
 
 function PocketClock() {
   const [time, setTime] = useState("");
@@ -43,6 +44,9 @@ export function PocketShell() {
 
   return (
     <div className="pocket" style={{ background: wallpaper.css }}>
+      {wallpaper.frag && !top ? (
+        <ShaderCanvas frag={wallpaper.frag} className="wallpaper-canvas" />
+      ) : null}
       <div className="pocket-topbar">
         <button className="pocket-start" onClick={() => setStartOpen((s) => !s)}>
           <PixelIcon name="flag" size={16} />

@@ -1131,6 +1131,140 @@ a {
   margin: 0;
 }
 
+/* ---------- shader wallpaper / screensaver / CRT ---------- */
+
+.wallpaper-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+}
+
+.fill-canvas {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.screensaver {
+  position: fixed;
+  inset: 0;
+  z-index: 500000;
+  background: #000;
+  cursor: none;
+}
+
+.ss-canvas {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.ss-logo {
+  position: absolute;
+  left: 0;
+  top: 0;
+  font-size: 44px;
+  font-weight: bold;
+  color: #00a0a0;
+  text-shadow: 3px 3px 0 #003030;
+  letter-spacing: 2px;
+  will-change: transform;
+}
+
+.ss-preview-logo {
+  color: #00a0a0;
+  font-weight: bold;
+  display: block;
+  text-align: center;
+  padding-top: 40%;
+}
+
+.crt-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 400000;
+  pointer-events: none;
+  background: repeating-linear-gradient(
+      0deg,
+      rgba(0, 0, 0, 0.14) 0 1px,
+      transparent 1px 3px
+    ),
+    radial-gradient(
+      ellipse at center,
+      transparent 55%,
+      rgba(0, 0, 20, 0.28) 100%
+    );
+  animation: crt-flicker 4s infinite;
+}
+
+@keyframes crt-flicker {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  97% {
+    opacity: 1;
+  }
+  98% {
+    opacity: 0.86;
+  }
+  99% {
+    opacity: 1;
+  }
+}
+
+.tray-speaker {
+  min-width: 22px;
+  min-height: 20px;
+  width: 22px;
+  height: 20px;
+  padding: 0;
+  font-size: 11px;
+  border: none;
+  box-shadow: none;
+  background: none;
+  cursor: pointer;
+}
+
+.display-app {
+  padding: 6px;
+}
+
+.display-page {
+  overflow-y: auto;
+}
+
+.display-monitor-screen {
+  overflow: hidden;
+}
+
+.ss-delay-row {
+  margin-top: 6px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.ss-delay-input {
+  width: 60px;
+}
+
+/* Desktop/pocket children sit above the wallpaper canvas.
+   .desktop-icons is already absolutely positioned — z-index alone. */
+.desktop-icons {
+  z-index: 1;
+}
+
+.pocket-topbar,
+.pocket-home,
+.pocket-app,
+.pocket-start-menu {
+  position: relative;
+  z-index: 1;
+}
+
 /* ---------- desktop widgets ---------- */
 
 .widgets-layer {
@@ -1340,6 +1474,275 @@ a {
 
 .pocket-date {
   font-weight: bold;
+}
+
+/* ---------- OQ2000 ---------- */
+
+.oq-panel {
+  padding: 6px;
+  gap: 6px;
+}
+
+.oq-self {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px;
+  background: linear-gradient(#000080, #1084d0);
+  color: #fff;
+  flex: 0 0 auto;
+}
+
+.oq-self-status {
+  font-size: 11px;
+  color: #9f9;
+}
+
+.oq-group {
+  background: #d4d0c8;
+  border: 1px solid;
+  border-color: #fff #808080 #808080 #fff;
+  padding: 3px 8px;
+  font-weight: bold;
+  flex: 0 0 auto;
+}
+
+.oq-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: 2px;
+}
+
+.oq-friend {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 6px;
+  cursor: pointer;
+}
+
+.oq-friend:hover {
+  background: #000080;
+  color: #fff;
+}
+
+.oq-friend:hover .oq-sign {
+  color: #ccd;
+}
+
+.oq-avatar {
+  object-fit: cover;
+  border: 1px solid #808080;
+}
+
+.oq-avatar-offline {
+  filter: grayscale(1);
+}
+
+.oq-friend-meta {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.oq-sign {
+  font-size: 11px;
+  color: #666;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.oq-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #999;
+  flex: 0 0 auto;
+}
+
+.oq-dot-on {
+  background: #0c0;
+}
+
+.oq-hint {
+  flex: 0 0 auto;
+  margin: 0;
+}
+
+.oq-chat {
+  padding: 6px;
+  gap: 6px;
+}
+
+.oq-chat-log {
+  flex: 1;
+  overflow-y: auto;
+}
+
+.oq-msg {
+  margin-bottom: 8px;
+}
+
+.oq-msg b {
+  display: block;
+  color: #000080;
+}
+
+.oq-msg-me b {
+  color: #800000;
+}
+
+.oq-chat-input {
+  margin: 0;
+  flex: 0 0 auto;
+}
+
+.oq-chat-input input {
+  flex: 1;
+  min-width: 0;
+}
+
+/* ---------- MS-DOS ---------- */
+
+.dos-app {
+  padding: 0;
+  background: #000;
+}
+
+.dos-screen {
+  flex: 1;
+  overflow-y: auto;
+  padding: 8px;
+  background: #000;
+  color: #c0c0c0;
+  font-family: "Perfect DOS VGA 437", "Courier New", monospace;
+  font-size: 14px;
+  line-height: 1.35;
+  user-select: text;
+  cursor: text;
+}
+
+.dos-line {
+  white-space: pre-wrap;
+  word-break: break-all;
+}
+
+.dos-prompt-row {
+  display: flex;
+  align-items: center;
+}
+
+.dos-input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  outline: none;
+  box-shadow: none;
+  color: #c0c0c0;
+  font-family: inherit;
+  font-size: inherit;
+  padding: 0;
+  min-height: 0;
+  caret-color: #c0c0c0;
+}
+
+/* ---------- dial-up ---------- */
+
+.dialup {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #d4d0c8;
+}
+
+.dialup-dialog {
+  width: 300px;
+}
+
+.dialup-body {
+  padding: 10px;
+}
+
+.dialup-step {
+  color: #000080;
+  min-height: 16px;
+}
+
+.dialup-bar {
+  width: 100%;
+  margin: 8px 0;
+}
+
+/* ---------- clippy ---------- */
+
+.clippy {
+  position: absolute;
+  right: 14px;
+  bottom: 44px;
+  z-index: 90000;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 6px;
+}
+
+.clippy-bubble {
+  max-width: 240px;
+  padding: 10px 12px;
+  position: relative;
+  background: #ffffcc;
+}
+
+.clippy-bubble p {
+  margin: 0 0 8px;
+  line-height: 1.45;
+  font-family: Tahoma, "Microsoft YaHei", sans-serif;
+  font-size: 12px;
+}
+
+.clippy-close {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  min-width: 18px;
+  min-height: 16px;
+  width: 18px;
+  height: 16px;
+  padding: 0;
+  font-size: 11px;
+  line-height: 1;
+}
+
+.clippy-next {
+  font-size: 11px;
+}
+
+.clippy-body {
+  cursor: pointer;
+  animation: clippy-bounce 3s ease-in-out infinite;
+}
+
+@keyframes clippy-bounce {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-4px);
+  }
+}
+
+/* ---------- music spectrum ---------- */
+
+.music-spectrum {
+  display: block;
+  width: 100%;
+  height: 40px;
+  margin-top: 4px;
+  border: 1px solid #1a3a1a;
 }
 
 /* ---------- Win98 scrollbars ---------- */

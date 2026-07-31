@@ -1,6 +1,11 @@
 "use client";
 
-import { useRef, type PointerEvent as ReactPointerEvent } from "react";
+import {
+  useEffect,
+  useRef,
+  useState,
+  type PointerEvent as ReactPointerEvent,
+} from "react";
 import { useWidgets, WIDGET_DEFS, type WidgetId } from "@/system/Widgets";
 import { ClockWidget } from "./widgets/ClockWidget";
 import { CalendarWidget } from "./widgets/CalendarWidget";
@@ -12,9 +17,22 @@ const WIDGET_COMPONENTS: Record<WidgetId, React.ComponentType> = {
   sysmon: SysmonWidget,
 };
 
+function useViewport() {
+  const [size, setSize] = useState({ w: 1280, h: 800 });
+  useEffect(() => {
+    const update = () =>
+      setSize({ w: window.innerWidth, h: window.innerHeight });
+    update();
+    window.addEventListener("resize", update);
+    return () => window.removeEventListener("resize", update);
+  }, []);
+  return size;
+}
+
 function WidgetCard({ id, title }: { id: WidgetId; title: string }) {
   const { widgets, move } = useWidgets();
   const state = widgets[id];
+  const { w: vw, h: vh } = useViewport();
   const drag = useRef<{
     startX: number;
     startY: number;
@@ -24,13 +42,17 @@ function WidgetCard({ id, title }: { id: WidgetId; title: string }) {
 
   const Body = WIDGET_COMPONENTS[id];
 
+  // Render-time clamp only — the stored position survives viewport dips.
+  const shownX = Math.max(-60, Math.min(state.x, vw - 80));
+  const shownY = Math.max(0, Math.min(state.y, vh - 110));
+
   const onPointerDown = (e: ReactPointerEvent) => {
     (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
     drag.current = {
       startX: e.clientX,
       startY: e.clientY,
-      baseX: state.x,
-      baseY: state.y,
+      baseX: shownX,
+      baseY: shownY,
     };
   };
 
@@ -55,7 +77,7 @@ function WidgetCard({ id, title }: { id: WidgetId; title: string }) {
   return (
     <div
       className="widget-card"
-      style={{ left: state.x, top: state.y }}
+      style={{ left: shownX, top: shownY }}
       onPointerDown={onPointerDown}
       onPointerMove={onPointerMove}
       onPointerUp={onPointerUp}

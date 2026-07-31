@@ -8,6 +8,7 @@ import { ContentProvider } from "@/system/ContentContext";
 import type { SiteContent } from "@/lib/content-types";
 import { Desktop } from "./Desktop";
 import { PocketShell } from "./PocketShell";
+import { playSound } from "@/system/sounds";
 
 type Power = "booting" | "on" | "off" | "bsod";
 
@@ -26,9 +27,21 @@ export function Shell({ content }: { content: SiteContent }) {
     // re-evaluate on resize as a fallback.
     window.addEventListener("resize", update);
     const bootTimer = setTimeout(() => setPower("on"), 900);
-    const onBsod = () => setPower("bsod");
+    const onBsod = () => {
+      setPower("bsod");
+      playSound("error");
+    };
     window.addEventListener("win98-bsod", onBsod);
+    // The startup chord needs a user gesture (autoplay policy): play it on
+    // the first interaction shortly after boot.
+    const bootAt = Date.now();
+    const onFirstGesture = () => {
+      window.removeEventListener("pointerdown", onFirstGesture);
+      if (Date.now() - bootAt < 30_000) playSound("startup");
+    };
+    window.addEventListener("pointerdown", onFirstGesture);
     return () => {
+      window.removeEventListener("pointerdown", onFirstGesture);
       mq.removeEventListener("change", update);
       window.removeEventListener("resize", update);
       window.removeEventListener("win98-bsod", onBsod);
@@ -70,7 +83,12 @@ export function Shell({ content }: { content: SiteContent }) {
             {isPocket ? (
               <PocketShell />
             ) : (
-              <Desktop onShutdown={() => setPower("off")} />
+              <Desktop
+                onShutdown={() => {
+                  playSound("shutdown");
+                  setPower("off");
+                }}
+              />
             )}
             {power === "bsod" ? (
               // Overlay, not a tree swap — open windows survive the crash.

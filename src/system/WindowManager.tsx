@@ -10,6 +10,7 @@ import {
   type ReactNode,
 } from "react";
 import type { AppDescriptor, WindowState } from "./types";
+import { playSound } from "./sounds";
 
 interface WindowManagerApi {
   windows: WindowState[];
@@ -79,6 +80,7 @@ export function WindowManagerProvider({ children }: { children: ReactNode }) {
       });
       // Whether newly created or pre-existing, bring it to front.
       focus(app.id);
+      playSound("click");
     },
     [focus]
   );
@@ -86,6 +88,7 @@ export function WindowManagerProvider({ children }: { children: ReactNode }) {
   const close = useCallback((id: string) => {
     setWindows((ws) => ws.filter((w) => w.id !== id));
     setFocusedId((f) => (f === id ? null : f));
+    playSound("click");
   }, []);
 
   const minimize = useCallback((id: string) => {

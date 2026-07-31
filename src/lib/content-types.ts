@@ -69,6 +69,21 @@ export interface MusicTrack {
   code: string; // strudel pattern source
 }
 
+export interface Post {
+  slug: string;
+  title: string;
+  date: string; // ISO yyyy-mm-dd
+  body: string; // markdown
+}
+
+export interface Friend {
+  name: string;
+  url: string;
+  sign: string;
+  avatar?: string;
+  online: boolean;
+}
+
 export interface SiteContent {
   site: SiteMeta;
   aboutMd: string;
@@ -76,4 +91,6 @@ export interface SiteContent {
   projects: ProjectContent[];
   publications: PublicationContent[];
   music: MusicTrack[];
+  posts: Post[];
+  friends: Friend[];
 }

@@ -47,6 +47,16 @@ export function StartMenu({
           <PixelIcon name="globe" size={24} />
           <span>Academic Site</span>
         </a>
+        <button
+          className="start-menu-item"
+          onClick={() => {
+            window.dispatchEvent(new CustomEvent("win98-summon-clippy"));
+            onClose();
+          }}
+        >
+          <PixelIcon name="clippy" size={24} />
+          <span>Help (Agent 98)</span>
+        </button>
         <div className="start-menu-separator" />
         <button className="start-menu-item" onClick={onShutdown}>
           <PixelIcon name="computer" size={24} />

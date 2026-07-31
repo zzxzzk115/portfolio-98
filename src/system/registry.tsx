@@ -11,6 +11,9 @@ import { NotepadApp } from "@/apps/NotepadApp";
 import { DisplayApp } from "@/apps/DisplayApp";
 import { MusicApp } from "@/apps/MusicApp";
 import { TaskManagerApp } from "@/apps/TaskManagerApp";
+import { DocumentsApp } from "@/apps/DocumentsApp";
+import { OQ2000App } from "@/apps/OQ2000App";
+import { DosApp } from "@/apps/DosApp";
 import { MinesweeperApp } from "@/apps/MinesweeperApp";
 import { IExploreApp } from "@/apps/IExploreApp";
 
@@ -63,6 +66,36 @@ export const APPS: AppDescriptor[] = [
     icon: "joystick",
     component: GamesApp,
     defaultSize: { width: 760, height: 420 },
+    desktop: true,
+    startMenu: true,
+    pocket: true,
+  },
+  {
+    id: "documents",
+    title: "My Documents",
+    icon: "folder",
+    component: DocumentsApp,
+    defaultSize: { width: 520, height: 400 },
+    desktop: true,
+    startMenu: true,
+    pocket: true,
+  },
+  {
+    id: "oq2000",
+    title: "OQ2000",
+    icon: "penguin",
+    component: OQ2000App,
+    defaultSize: { width: 300, height: 480 },
+    desktop: true,
+    startMenu: true,
+    pocket: true,
+  },
+  {
+    id: "dos",
+    title: "MS-DOS Prompt",
+    icon: "dos",
+    component: DosApp,
+    defaultSize: { width: 560, height: 380 },
     desktop: true,
     startMenu: true,
     pocket: true,

@@ -11,10 +11,14 @@ import { StartMenu } from "./StartMenu";
 import { ContextMenu } from "./ContextMenu";
 import { WidgetsLayer } from "./WidgetsLayer";
 import { useWidgets, WIDGET_DEFS } from "@/system/Widgets";
+import { ShaderCanvas } from "@/lib/glview";
+import { Screensaver, useIdleScreensaver } from "./Screensaver";
+import { Clippy } from "./Clippy";
 
 export function Desktop({ onShutdown }: { onShutdown: () => void }) {
   const wm = useWindowManager();
-  const { wallpaper } = useSettings();
+  const { wallpaper, crt } = useSettings();
+  const saver = useIdleScreensaver();
   const [startOpen, setStartOpen] = useState(false);
   const [selectedIcon, setSelectedIcon] = useState<string | null>(null);
   const [menuPos, setMenuPos] = useState<{ x: number; y: number } | null>(null);
@@ -56,6 +60,13 @@ export function Desktop({ onShutdown }: { onShutdown: () => void }) {
         setMenuPos({ x: e.clientX, y: e.clientY });
       }}
     >
+      {wallpaper.frag ? (
+        <ShaderCanvas
+          frag={wallpaper.frag}
+          className="wallpaper-canvas"
+          paused={saver.active}
+        />
+      ) : null}
       <div
         className={"desktop-icons" + (refreshing ? " desktop-refreshing" : "")}
         onClick={() => {
@@ -167,6 +178,11 @@ export function Desktop({ onShutdown }: { onShutdown: () => void }) {
           setTaskbarMenuPos({ x, y: y - 40 });
         }}
       />
+
+      <Clippy />
+
+      {crt ? <div className="crt-overlay" /> : null}
+      {saver.active ? <Screensaver onExit={saver.exit} /> : null}
     </div>
   );
 }

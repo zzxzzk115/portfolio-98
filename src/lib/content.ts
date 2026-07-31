@@ -4,7 +4,9 @@ import fs from "node:fs";
 import path from "node:path";
 import matter from "gray-matter";
 import type {
+  Friend,
   MusicTrack,
+  Post,
   ProjectContent,
   PublicationContent,
   SiteContent,
@@ -86,5 +88,41 @@ export function loadSiteContent(): SiteContent {
   });
   music.sort((a, b) => a.order - b.order);
 
-  return { site, aboutMd, readmeText, projects, publications, music };
+  const posts: Post[] = listMd("posts").map((file) => {
+    const { data, content } = readMd("posts", file);
+    const d = data as { title?: string; date?: string | Date };
+    return {
+      slug: file.replace(/\.md$/, ""),
+      title: d.title ?? file,
+      date:
+        d.date instanceof Date
+          ? d.date.toISOString().slice(0, 10)
+          : (d.date ?? ""),
+      body: content.trim(),
+    };
+  });
+  posts.sort((a, b) => b.date.localeCompare(a.date));
+
+  let friends: Friend[] = [];
+  if (fs.existsSync(path.join(CONTENT_DIR, "friends.md"))) {
+    const raw = readMd("friends.md").data as { friends?: Partial<Friend>[] };
+    friends = (raw.friends ?? []).map((f) => ({
+      name: f.name ?? "?",
+      url: f.url ?? "#",
+      sign: f.sign ?? "",
+      avatar: f.avatar,
+      online: f.online ?? true,
+    }));
+  }
+
+  return {
+    site,
+    aboutMd,
+    readmeText,
+    projects,
+    publications,
+    music,
+    posts,
+    friends,
+  };
 }

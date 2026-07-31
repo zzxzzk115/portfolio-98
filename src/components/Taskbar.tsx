@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useWindowManager } from "@/system/WindowManager";
 import { PixelIcon } from "@/system/pixel-icons";
+import { soundEnabled, setSoundEnabled, playSound } from "@/system/sounds";
 
 function Clock() {
   const [time, setTime] = useState<string>("");
@@ -19,6 +20,25 @@ function Clock() {
     return () => clearInterval(id);
   }, []);
   return <div className="taskbar-clock">{time}</div>;
+}
+
+function SpeakerToggle() {
+  const [on, setOn] = useState(true);
+  useEffect(() => setOn(soundEnabled()), []);
+  return (
+    <button
+      className="tray-speaker"
+      title={on ? "Mute sounds" : "Unmute sounds"}
+      onClick={() => {
+        const next = !on;
+        setOn(next);
+        setSoundEnabled(next);
+        if (next) playSound("click");
+      }}
+    >
+      {on ? "🔊" : "🔇"}
+    </button>
+  );
 }
 
 export function Taskbar({
@@ -68,6 +88,7 @@ export function Taskbar({
         ))}
       </div>
       <div className="taskbar-tray">
+        <SpeakerToggle />
         <Clock />
       </div>
     </div>

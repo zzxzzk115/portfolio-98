@@ -10,6 +10,10 @@ import type { MusicTrack } from "@/lib/content-types";
 interface StrudelApi {
   evaluate: (code: string) => Promise<unknown>;
   hush: () => void;
+  getAnalyzerData?: (
+    type: "time" | "frequency",
+    id?: string | number
+  ) => Float32Array;
 }
 
 let strudelInit: Promise<StrudelApi> | null = null;
@@ -29,11 +33,73 @@ function getStrudel(): Promise<StrudelApi> {
           }
         },
       });
-      return { evaluate: mod.evaluate, hush: mod.hush };
+      const api: StrudelApi = {
+        evaluate: mod.evaluate,
+        hush: mod.hush,
+        getAnalyzerData: mod.getAnalyzerData,
+      };
+      strudelApiSync = api;
+      return api;
     })();
   }
   return strudelInit;
 }
+
+// Winamp-style spectrum bars fed by strudel's built-in analyser (patterns
+// get `.analyze()` appended on play). Falls back to idle bars when silent.
+function Spectrum({ playing }: { playing: boolean }) {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx2d = canvas.getContext("2d");
+    if (!ctx2d) return;
+    let raf = 0;
+    const BARS = 20;
+    const levels = new Array(BARS).fill(0);
+
+    const tick = () => {
+      raf = requestAnimationFrame(tick);
+      const w = canvas.width;
+      const h = canvas.height;
+      ctx2d.fillStyle = "#0a1a0a";
+      ctx2d.fillRect(0, 0, w, h);
+      let data: Float32Array | null = null;
+      if (playing) {
+        try {
+          // getAnalyzerData is synchronous once init resolved
+          data = strudelApiSync?.getAnalyzerData?.("frequency", "p98") ?? null;
+        } catch {
+          data = null;
+        }
+      }
+      const barW = w / BARS;
+      for (let i = 0; i < BARS; i++) {
+        let target = 0;
+        if (data && data.length) {
+          // dB values (-150..0) → 0..1, sample log-ish across the low half
+          const idx = Math.floor((i / BARS) * data.length * 0.5);
+          const db = data[idx];
+          if (isFinite(db)) target = Math.max(0, (db + 100) / 70);
+        }
+        levels[i] = Math.max(target, levels[i] * 0.82);
+        const bh = Math.min(1, levels[i]) * (h - 2);
+        ctx2d.fillStyle = "#39ff5a";
+        ctx2d.fillRect(i * barW + 1, h - bh, barW - 2, bh);
+        ctx2d.fillStyle = "#0f5a1f";
+        ctx2d.fillRect(i * barW + 1, 0, barW - 2, h - bh);
+      }
+    };
+    tick();
+    return () => cancelAnimationFrame(raf);
+  }, [playing]);
+
+  return <canvas ref={canvasRef} width={300} height={40} className="music-spectrum" />;
+}
+
+// Synchronous handle for the analyser once init completes.
+let strudelApiSync: StrudelApi | null = null;
 
 type PlayState = "stopped" | "loading" | "playing" | "error";
 
@@ -77,7 +143,13 @@ export function MusicApp() {
     try {
       const strudel = await getStrudel();
       strudel.hush();
-      await strudel.evaluate(t.code);
+      try {
+        // Feed the spectrum: tap the pattern through strudel's analyser.
+        await strudel.evaluate(`${t.code}\n  .analyze("p98")`);
+      } catch {
+        // Pattern shape didn't allow chaining — play it plain.
+        await strudel.evaluate(t.code);
+      }
       playingRef.current = true;
       setElapsed(0);
       setState("playing");
@@ -127,6 +199,7 @@ export function MusicApp() {
         {state === "error" ? (
           <div className="music-lcd-error">{errorMsg}</div>
         ) : null}
+        <Spectrum playing={state === "playing"} />
       </div>
 
       <div className="music-controls">

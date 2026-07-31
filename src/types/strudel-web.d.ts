@@ -8,4 +8,8 @@ declare module "@strudel/web" {
     source: string | Record<string, unknown>,
     baseUrl?: string
   ): Promise<unknown>;
+  export function getAnalyzerData(
+    type: "time" | "frequency",
+    id?: string | number
+  ): Float32Array;
 }
