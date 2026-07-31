@@ -31,6 +31,7 @@ export interface VfsNode {
   sizeKB?: number;
   modified: string;
   text?: string; // content readable via DOS `type` / notepad
+  group?: string; // Explorer renders section headers per group, all visible
   children?: VfsNode[];
   open?: (wm: VfsWm) => void;
 }
@@ -159,28 +160,22 @@ export function buildVfs(content: SiteContent): VfsNode {
     { key: "fun", label: "Just for Fun", icon: "gameboy" },
   ];
 
+  // Flat listing with group headers — every project visible at a glance.
   const projects = folder(C, "Projects", (p) =>
-    PROJECT_CATEGORIES.filter((cat) =>
-      content.projects.some((x) => x.meta.category === cat.key)
-    ).map((cat) =>
-      folder(
-        p,
-        cat.label,
-        (cp) =>
-          content.projects
-            .filter((proj) => proj.meta.category === cat.key)
-            .map((proj) =>
-              file(cp, proj.meta.name, {
-                icon: cat.icon,
-                thumb: proj.meta.img,
-                typeName: "Project",
-                sizeKB: 64 + (hashOf(proj.meta.slug) % 4000),
-                text: proj.meta.blurb,
-                open: (wm) => wm.open(projectAppDescriptor(proj)),
-              })
-            ),
-        cat.icon
-      )
+    PROJECT_CATEGORIES.flatMap((cat) =>
+      content.projects
+        .filter((proj) => proj.meta.category === cat.key)
+        .map((proj) =>
+          file(p, proj.meta.name, {
+            icon: cat.icon,
+            thumb: proj.meta.img,
+            typeName: "Project",
+            group: cat.label,
+            sizeKB: 64 + (hashOf(proj.meta.slug) % 4000),
+            text: proj.meta.blurb,
+            open: (wm) => wm.open(projectAppDescriptor(proj)),
+          })
+        )
     )
   );
 

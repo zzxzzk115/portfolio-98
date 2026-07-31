@@ -257,8 +257,8 @@ function Explorer({ initialPath }: { initialPath: string }) {
             setMenu({ x: e.clientX, y: e.clientY, node });
           }}
         >
-          <div className="icon-grid">
-            {children.map((child) => (
+          {(() => {
+            const renderItem = (child: VfsNode) => (
               <button
                 key={child.path}
                 className={
@@ -292,11 +292,40 @@ function Explorer({ initialPath }: { initialPath: string }) {
                 )}
                 <span>{child.name}</span>
               </button>
-            ))}
-            {children.length === 0 ? (
-              <p className="hint-text">(empty)</p>
-            ) : null}
-          </div>
+            );
+
+            const groups = [
+              ...new Set(
+                children.map((c) => c.group).filter((g): g is string => !!g)
+              ),
+            ];
+            if (groups.length === 0) {
+              return (
+                <div className="icon-grid">
+                  {children.map(renderItem)}
+                  {children.length === 0 ? (
+                    <p className="hint-text">(empty)</p>
+                  ) : null}
+                </div>
+              );
+            }
+            const ungrouped = children.filter((c) => !c.group);
+            return (
+              <>
+                {groups.map((g) => (
+                  <fieldset key={g} className="explorer-group">
+                    <legend>{g}</legend>
+                    <div className="icon-grid">
+                      {children.filter((c) => c.group === g).map(renderItem)}
+                    </div>
+                  </fieldset>
+                ))}
+                {ungrouped.length > 0 ? (
+                  <div className="icon-grid">{ungrouped.map(renderItem)}</div>
+                ) : null}
+              </>
+            );
+          })()}
         </div>
       </div>
 

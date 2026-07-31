@@ -1576,6 +1576,10 @@ a {
   margin-top: 0;
 }
 
+.explorer-group {
+  margin-bottom: 8px;
+}
+
 /* ---------- properties dialog ---------- */
 
 .props-dialog {
