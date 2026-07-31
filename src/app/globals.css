@@ -431,17 +431,17 @@ a {
 }
 
 .project-card {
-  width: 148px;
-  min-height: 118px;
+  width: 216px;
+  min-height: 164px;
 }
 
 .project-thumb {
-  width: 132px;
-  height: 88px;
+  width: 196px;
+  height: 128px;
   object-fit: contain;
   border: 2px solid;
   border-color: #808080 #fff #fff #808080;
-  background: #000;
+  background: #d4d0c8;
 }
 
 .project-title {
