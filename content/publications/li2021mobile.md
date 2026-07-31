@@ -2,7 +2,19 @@
 title: Mobile Surveillance System Based on Remote APP Control
 authors: Shaowei Li, Kexuan Zhang
 venue: Computer Systems & Applications, 30(6), p.82
+abbr: CSA
 year: 2021
+bibtex: |
+  @article{li2021mobile,
+    title     = {Mobile Surveillance System Based on Remote {{APP}} Control},
+    author    = {Li, Shaowei and Zhang, Kexuan},
+    year      = {2021},
+    journal   = {Computer Systems \& Applications},
+    volume    = {30},
+    number    = {6},
+    pages     = {82},
+    doi       = {10.15888/j.cnki.csa.007939}
+  }
 doi: 10.15888/j.cnki.csa.007939
 pdf: /assets/li_zhang_2021.pdf
 preview: /assets/pubs/csa.jpg

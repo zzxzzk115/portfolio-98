@@ -50,9 +50,11 @@ export interface PublicationMeta {
   title: string;
   authors: string;
   venue: string;
+  abbr?: string; // short venue badge, e.g. "CSA"
   year: number;
   doi?: string;
   pdf?: string;
+  bibtex?: string; // raw BibTeX entry shown behind the BibTeX button
   preview?: string; // journal/conference cover thumbnail
   teaser?: string; // optional figure shown with the abstract
   projectPage?: string; // dedicated project-page button

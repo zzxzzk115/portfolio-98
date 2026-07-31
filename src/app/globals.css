@@ -450,6 +450,39 @@ a {
   margin-bottom: 6px;
 }
 
+.pub-abbr {
+  display: inline-block;
+  background: #000080;
+  color: #fff;
+  font-weight: bold;
+  font-size: 11px;
+  padding: 1px 6px;
+  margin-right: 6px;
+  vertical-align: middle;
+}
+
+.pub-bibtex-wrap {
+  position: relative;
+  margin-top: 6px;
+  padding: 0;
+}
+
+.pub-bibtex {
+  margin: 0;
+  padding: 8px;
+  font-family: "Courier New", monospace;
+  font-size: 12px;
+  white-space: pre;
+  overflow-x: auto;
+  user-select: text;
+}
+
+.pub-bibtex-copy {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+}
+
 .pub-authors,
 .pub-venue {
   margin: 4px 0;
