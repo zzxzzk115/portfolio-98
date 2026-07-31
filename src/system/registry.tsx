@@ -10,6 +10,7 @@ import { ContactApp } from "@/apps/ContactApp";
 import { NotepadApp } from "@/apps/NotepadApp";
 import { DisplayApp } from "@/apps/DisplayApp";
 import { MusicApp } from "@/apps/MusicApp";
+import { TaskManagerApp } from "@/apps/TaskManagerApp";
 import { MinesweeperApp } from "@/apps/MinesweeperApp";
 import { IExploreApp } from "@/apps/IExploreApp";
 
@@ -114,6 +115,16 @@ export const APPS: AppDescriptor[] = [
     defaultSize: { width: 480, height: 420 },
     desktop: true,
     startMenu: false,
+    pocket: true,
+  },
+  {
+    id: "taskmgr",
+    title: "Task Manager",
+    icon: "taskmgr",
+    component: TaskManagerApp,
+    defaultSize: { width: 420, height: 480 },
+    desktop: false,
+    startMenu: true,
     pocket: true,
   },
   {

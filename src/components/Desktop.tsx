@@ -9,6 +9,8 @@ import { Win98Window } from "./Window";
 import { Taskbar } from "./Taskbar";
 import { StartMenu } from "./StartMenu";
 import { ContextMenu } from "./ContextMenu";
+import { WidgetsLayer } from "./WidgetsLayer";
+import { useWidgets, WIDGET_DEFS } from "@/system/Widgets";
 
 export function Desktop({ onShutdown }: { onShutdown: () => void }) {
   const wm = useWindowManager();
@@ -16,8 +18,13 @@ export function Desktop({ onShutdown }: { onShutdown: () => void }) {
   const [startOpen, setStartOpen] = useState(false);
   const [selectedIcon, setSelectedIcon] = useState<string | null>(null);
   const [menuPos, setMenuPos] = useState<{ x: number; y: number } | null>(null);
+  const [taskbarMenuPos, setTaskbarMenuPos] = useState<{
+    x: number;
+    y: number;
+  } | null>(null);
   const [refreshing, setRefreshing] = useState(false);
   const autoOpened = useRef(false);
+  const { widgets, toggle } = useWidgets();
 
   // Greet visitors with About Me already open.
   useEffect(() => {
@@ -45,6 +52,7 @@ export function Desktop({ onShutdown }: { onShutdown: () => void }) {
         if ((e.target as HTMLElement).closest(".win98-window")) return;
         e.preventDefault();
         setStartOpen(false);
+        setTaskbarMenuPos(null);
         setMenuPos({ x: e.clientX, y: e.clientY });
       }}
     >
@@ -82,6 +90,8 @@ export function Desktop({ onShutdown }: { onShutdown: () => void }) {
         ))}
       </div>
 
+      <WidgetsLayer />
+
       {wm.windows.map((w) => (
         <Win98Window key={w.id} win={w} />
       ))}
@@ -116,6 +126,29 @@ export function Desktop({ onShutdown }: { onShutdown: () => void }) {
                 const display = APPS.find((a) => a.id === "display");
                 if (display) wm.open(display);
               },
+              separatorAfter: true,
+            },
+            ...WIDGET_DEFS.map((w) => ({
+              label: w.title,
+              checked: widgets[w.id].enabled,
+              onClick: () => toggle(w.id),
+            })),
+          ]}
+        />
+      ) : null}
+
+      {taskbarMenuPos ? (
+        <ContextMenu
+          x={taskbarMenuPos.x}
+          y={taskbarMenuPos.y}
+          onClose={() => setTaskbarMenuPos(null)}
+          items={[
+            {
+              label: "Task Manager",
+              onClick: () => {
+                const taskmgr = APPS.find((a) => a.id === "taskmgr");
+                if (taskmgr) wm.open(taskmgr);
+              },
             },
           ]}
         />
@@ -125,7 +158,13 @@ export function Desktop({ onShutdown }: { onShutdown: () => void }) {
         startOpen={startOpen}
         onToggleStart={() => {
           setMenuPos(null);
+          setTaskbarMenuPos(null);
           setStartOpen((s) => !s);
+        }}
+        onContextMenu={(x, y) => {
+          setMenuPos(null);
+          setStartOpen(false);
+          setTaskbarMenuPos({ x, y: y - 40 });
         }}
       />
     </div>

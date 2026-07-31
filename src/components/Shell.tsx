@@ -3,12 +3,13 @@
 import { useEffect, useState } from "react";
 import { WindowManagerProvider } from "@/system/WindowManager";
 import { SettingsProvider } from "@/system/Settings";
+import { WidgetsProvider } from "@/system/Widgets";
 import { ContentProvider } from "@/system/ContentContext";
 import type { SiteContent } from "@/lib/content-types";
 import { Desktop } from "./Desktop";
 import { PocketShell } from "./PocketShell";
 
-type Power = "booting" | "on" | "off";
+type Power = "booting" | "on" | "off" | "bsod";
 
 export function Shell({ content }: { content: SiteContent }) {
   const [power, setPower] = useState<Power>("booting");
@@ -25,9 +26,12 @@ export function Shell({ content }: { content: SiteContent }) {
     // re-evaluate on resize as a fallback.
     window.addEventListener("resize", update);
     const bootTimer = setTimeout(() => setPower("on"), 900);
+    const onBsod = () => setPower("bsod");
+    window.addEventListener("win98-bsod", onBsod);
     return () => {
       mq.removeEventListener("change", update);
       window.removeEventListener("resize", update);
+      window.removeEventListener("win98-bsod", onBsod);
       clearTimeout(bootTimer);
     };
   }, []);
@@ -61,13 +65,40 @@ export function Shell({ content }: { content: SiteContent }) {
   return (
     <ContentProvider content={content}>
       <SettingsProvider>
-        <WindowManagerProvider>
-          {isPocket ? (
-            <PocketShell />
-          ) : (
-            <Desktop onShutdown={() => setPower("off")} />
-          )}
-        </WindowManagerProvider>
+        <WidgetsProvider>
+          <WindowManagerProvider>
+            {isPocket ? (
+              <PocketShell />
+            ) : (
+              <Desktop onShutdown={() => setPower("off")} />
+            )}
+            {power === "bsod" ? (
+              // Overlay, not a tree swap — open windows survive the crash.
+              <div
+                className="bsod-screen"
+                onClick={() => setPower("on")}
+                onKeyDown={() => setPower("on")}
+                tabIndex={0}
+                ref={(el) => el?.focus()}
+              >
+                <p className="bsod-title">
+                  <span>Windows</span>
+                </p>
+                <p>
+                  A fatal exception 0E has occurred at 0028:C0011E36 in VXD
+                  EXPLORER(01) + 00010E36. The current application will be
+                  terminated.
+                </p>
+                <p>
+                  * Killing system processes is not covered by the warranty you
+                  never had.
+                </p>
+                <p>* Press any key to return to your desktop unharmed.</p>
+                <p className="bsod-continue">Press any key to continue _</p>
+              </div>
+            ) : null}
+          </WindowManagerProvider>
+        </WidgetsProvider>
       </SettingsProvider>
     </ContentProvider>
   );

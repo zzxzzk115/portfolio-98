@@ -290,6 +290,27 @@ export const ICONS: Record<string, PixelArt> = {
     ],
     P
   ),
+  taskmgr: art(
+    [
+      "                ",
+      " kkkkkkkkkkkkk  ",
+      " kbbbbbbbbbbbk  ",
+      " kkkkkkkkkkkkk  ",
+      " kwwwwwwwwwwwk  ",
+      " kw         wk  ",
+      " kw e     e wk  ",
+      " kw e  e  e wk  ",
+      " kw e  e  e wk  ",
+      " kwEe eE eEewk  ",
+      " kwEe eE eEewk  ",
+      " kwEeeEEeeEewk  ",
+      " kwEeeEEeeEewk  ",
+      " kwwwwwwwwwwwk  ",
+      " kkkkkkkkkkkkk  ",
+      "                ",
+    ],
+    P
+  ),
   note: art(
     [
       "                ",

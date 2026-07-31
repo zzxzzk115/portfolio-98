@@ -24,14 +24,24 @@ function Clock() {
 export function Taskbar({
   startOpen,
   onToggleStart,
+  onContextMenu,
 }: {
   startOpen: boolean;
   onToggleStart: () => void;
+  onContextMenu?: (x: number, y: number) => void;
 }) {
   const wm = useWindowManager();
 
   return (
-    <div className="taskbar">
+    <div
+      className="taskbar"
+      onContextMenu={(e) => {
+        if (!onContextMenu) return;
+        e.preventDefault();
+        e.stopPropagation();
+        onContextMenu(e.clientX, e.clientY);
+      }}
+    >
       <button
         className={"start-button" + (startOpen ? " start-button-active" : "")}
         onClick={onToggleStart}

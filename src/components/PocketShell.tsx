@@ -8,6 +8,8 @@ import { useSettings } from "@/system/Settings";
 import { useContent } from "@/system/ContentContext";
 import { PixelIcon } from "@/system/pixel-icons";
 import { asset } from "@/system/types";
+import { CalendarWidget } from "./widgets/CalendarWidget";
+import { SysmonWidget } from "./widgets/SysmonWidget";
 
 function PocketClock() {
   const [time, setTime] = useState("");
@@ -130,6 +132,18 @@ export function PocketShell() {
                 <div className="pocket-today-sub">{site.affiliation}</div>
               </div>
             </div>
+          </div>
+          <div className="pocket-today window pocket-widgets">
+            <div className="pocket-date">
+              {new Date().toLocaleDateString("en-GB", {
+                weekday: "long",
+                year: "numeric",
+                month: "long",
+                day: "numeric",
+              })}
+            </div>
+            <CalendarWidget compact />
+            <SysmonWidget compact />
           </div>
           <div className="pocket-grid">
             {launcherApps.map((app) => (

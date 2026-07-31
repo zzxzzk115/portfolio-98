@@ -7,6 +7,7 @@ export interface MenuItem {
   onClick?: () => void;
   disabled?: boolean;
   separatorAfter?: boolean;
+  checked?: boolean;
 }
 
 export function ContextMenu({
@@ -47,6 +48,9 @@ export function ContextMenu({
               onClose();
             }}
           >
+            <span className="context-menu-check">
+              {item.checked ? "✓" : ""}
+            </span>
             {item.label}
           </button>
           {item.separatorAfter ? (
