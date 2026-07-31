@@ -503,6 +503,32 @@ a {
   white-space: nowrap;
 }
 
+.find-folder-cell {
+  white-space: nowrap;
+  color: #444;
+}
+
+.find-match-cell {
+  color: #333;
+  line-height: 1.4;
+  word-break: break-word;
+}
+
+.find-hl {
+  background: #ffff00;
+  color: #000;
+  font-weight: bold;
+}
+
+.taskmgr-row-selected .find-hl {
+  background: #ffff00;
+}
+
+.taskmgr-row-selected .find-folder-cell,
+.taskmgr-row-selected .find-match-cell {
+  color: #fff;
+}
+
 .pub-cite-actions {
   display: flex;
   justify-content: flex-end;

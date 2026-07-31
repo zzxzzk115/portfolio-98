@@ -1,21 +1,47 @@
 "use client";
 
-import { useState } from "react";
+import { useState, type ReactNode } from "react";
 import { useContent } from "@/system/ContentContext";
 import { useWindowManager } from "@/system/WindowManager";
 import { PixelIcon } from "@/system/pixel-icons";
 import { buildVfs, type VfsNode } from "@/lib/vfs";
 import { explorerAppDescriptor } from "@/apps/ExplorerApp";
 
-function collectMatches(root: VfsNode, q: string): VfsNode[] {
-  const out: VfsNode[] = [];
+interface Match {
+  node: VfsNode;
+  where: "name" | "content" | "type";
+  snippet: string; // raw text containing the query (for highlighting)
+}
+
+function contentSnippet(text: string, q: string): string {
+  const lower = text.toLowerCase();
+  const idx = lower.indexOf(q);
+  if (idx < 0) return "";
+  const start = Math.max(0, idx - 32);
+  const end = Math.min(text.length, idx + q.length + 56);
+  const clean = (s: string) => s.replace(/\s+/g, " ");
+  return (
+    (start > 0 ? "…" : "") +
+    clean(text.slice(start, end)) +
+    (end < text.length ? "…" : "")
+  );
+}
+
+function collectMatches(root: VfsNode, q: string): Match[] {
+  const out: Match[] = [];
   const walk = (node: VfsNode) => {
     (node.children ?? []).forEach((child) => {
-      const hit =
-        child.name.toLowerCase().includes(q) ||
-        child.typeName.toLowerCase().includes(q) ||
-        (child.text?.toLowerCase().includes(q) ?? false);
-      if (hit) out.push(child);
+      if (child.name.toLowerCase().includes(q)) {
+        out.push({ node: child, where: "name", snippet: child.name });
+      } else if (child.text?.toLowerCase().includes(q)) {
+        out.push({
+          node: child,
+          where: "content",
+          snippet: contentSnippet(child.text, q),
+        });
+      } else if (child.typeName.toLowerCase().includes(q)) {
+        out.push({ node: child, where: "type", snippet: child.typeName });
+      }
       walk(child);
     });
   };
@@ -23,15 +49,35 @@ function collectMatches(root: VfsNode, q: string): VfsNode[] {
   return out;
 }
 
+// Highlight every occurrence of q (case-insensitive) in text.
+function Highlight({ text, q }: { text: string; q: string }): ReactNode {
+  if (!q) return text;
+  const lower = text.toLowerCase();
+  const parts: ReactNode[] = [];
+  let i = 0;
+  for (;;) {
+    const idx = lower.indexOf(q, i);
+    if (idx < 0) break;
+    if (idx > i) parts.push(text.slice(i, idx));
+    parts.push(
+      <span key={idx} className="find-hl">
+        {text.slice(idx, idx + q.length)}
+      </span>
+    );
+    i = idx + q.length;
+  }
+  parts.push(text.slice(i));
+  return <>{parts}</>;
+}
+
 export function FindApp() {
   const content = useContent();
   const wm = useWindowManager();
   const root = buildVfs(content);
   const [query, setQuery] = useState("");
-  const [searched, setSearched] = useState("");
   const [selected, setSelected] = useState<string | null>(null);
 
-  const q = searched.trim().toLowerCase();
+  const q = query.trim().toLowerCase();
   const results = q ? collectMatches(root, q) : [];
 
   const openNode = (node: VfsNode) => {
@@ -45,44 +91,31 @@ export function FindApp() {
   return (
     <div className="app-body app-body-fill find-app">
       <div className="toolbar-row find-bar">
-        <label htmlFor="find-input">Named:</label>
+        <label htmlFor="find-input">Search:</label>
         <input
           id="find-input"
           className="pub-search"
           value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          onKeyDown={(e) => {
-            if (e.key === "Enter") setSearched(query);
+          onChange={(e) => {
+            setQuery(e.target.value);
+            setSelected(null);
           }}
+          placeholder="File names and contents across C:\"
           spellCheck={false}
           autoFocus
         />
-        <button onClick={() => setSearched(query)}>Find Now</button>
-        <button
-          onClick={() => {
-            setQuery("");
-            setSearched("");
-            setSelected(null);
-          }}
-        >
-          New Search
-        </button>
       </div>
-      <p className="hint-text find-hint">
-        Searches file names and contents across C:\
-      </p>
       <div className="taskmgr-list sunken-panel find-results">
         <table className="taskmgr-table">
           <thead>
             <tr>
               <th>Name</th>
               <th>In Folder</th>
-              <th>Type</th>
-              <th>Size</th>
+              <th>Found in</th>
             </tr>
           </thead>
           <tbody>
-            {results.map((node) => (
+            {results.map(({ node, where, snippet }) => (
               <tr
                 key={node.path}
                 className={selected === node.path ? "taskmgr-row-selected" : ""}
@@ -91,18 +124,27 @@ export function FindApp() {
               >
                 <td className="find-name-cell">
                   <PixelIcon name={node.icon} size={14} />
-                  {node.name}
+                  <span>
+                    <Highlight text={node.name} q={q} />
+                  </span>
                 </td>
-                <td>{parentOf(node)}</td>
-                <td>{node.typeName}</td>
-                <td>
-                  {node.kind === "file" ? `${node.sizeKB ?? 0} KB` : ""}
+                <td className="find-folder-cell">{parentOf(node)}</td>
+                <td className="find-match-cell">
+                  {where === "name" ? (
+                    <i>file name</i>
+                  ) : where === "type" ? (
+                    <i>
+                      type: <Highlight text={snippet} q={q} />
+                    </i>
+                  ) : (
+                    <Highlight text={snippet} q={q} />
+                  )}
                 </td>
               </tr>
             ))}
             {q && results.length === 0 ? (
               <tr>
-                <td colSpan={4}>
+                <td colSpan={3}>
                   <i>No files found. The 90s had less content too.</i>
                 </td>
               </tr>
@@ -112,7 +154,7 @@ export function FindApp() {
       </div>
       <div className="taskmgr-statusbar">
         <span>
-          {q ? `${results.length} file(s) found` : "Enter a search term"}
+          {q ? `${results.length} file(s) found` : "Type to search"}
         </span>
       </div>
     </div>
