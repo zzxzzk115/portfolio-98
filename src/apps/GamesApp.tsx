@@ -1,9 +1,8 @@
 "use client";
 
-import { useContent } from "@/system/ContentContext";
-import { PixelIcon } from "@/system/pixel-icons";
-import { useWindowManager } from "@/system/WindowManager";
-import { projectAppDescriptor, ProjectThumb } from "./ProjectsApp";
+// Slimmed: the Games folder view now lives in Explorer (C:\Games); this
+// module keeps the embedded Lazy-100 player window.
+
 import type { AppDescriptor } from "@/system/types";
 
 export const lazy100Player: AppDescriptor = {
@@ -24,45 +23,3 @@ export const lazy100Player: AppDescriptor = {
   },
   defaultSize: { width: 700, height: 560 },
 };
-
-const GAME_SLUGS = ["cells-of-division", "gold-miner-rebirth", "catmario-gb"];
-
-export function GamesApp() {
-  const { projects } = useContent();
-  const wm = useWindowManager();
-
-  return (
-    <div className="app-body">
-      <div className="icon-grid">
-        <button
-          className="icon-grid-item project-card"
-          onClick={() => wm.open(lazy100Player)}
-        >
-          {(() => {
-            const lazy = projects.find((x) => x.meta.slug === "lazy-100");
-            return lazy ? (
-              <ProjectThumb project={lazy} icon="joystick" />
-            ) : (
-              <PixelIcon name="joystick" size={32} />
-            );
-          })()}
-          <span>Lazy-100 (play now!)</span>
-        </button>
-        {GAME_SLUGS.map((slug) => {
-          const p = projects.find((x) => x.meta.slug === slug);
-          if (!p) return null;
-          return (
-            <button
-              key={slug}
-              className="icon-grid-item project-card"
-              onClick={() => wm.open(projectAppDescriptor(p))}
-            >
-              <ProjectThumb project={p} icon="gameboy" />
-              <span>{p.meta.name}</span>
-            </button>
-          );
-        })}
-      </div>
-    </div>
-  );
-}

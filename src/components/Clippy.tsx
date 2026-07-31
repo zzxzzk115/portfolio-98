@@ -21,15 +21,18 @@ export function Clippy() {
   const [tip, setTip] = useState(0);
 
   useEffect(() => {
-    if (sessionStorage.getItem(DISMISS_KEY)) return;
-    const id = setTimeout(() => setVisible(true), 8000);
+    // The summon listener must survive dismissal — Help and CLIPPY.EXE
+    // bring the assistant back.
     const onSummon = () => {
       sessionStorage.removeItem(DISMISS_KEY);
       setVisible(true);
     };
     window.addEventListener("win98-summon-clippy", onSummon);
+    const id = sessionStorage.getItem(DISMISS_KEY)
+      ? null
+      : setTimeout(() => setVisible(true), 8000);
     return () => {
-      clearTimeout(id);
+      if (id) clearTimeout(id);
       window.removeEventListener("win98-summon-clippy", onSummon);
     };
   }, []);

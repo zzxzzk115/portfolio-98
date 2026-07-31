@@ -4,24 +4,42 @@ import type { AppDescriptor } from "./types";
 import { AboutApp } from "@/apps/AboutApp";
 import { CVApp } from "@/apps/CVApp";
 import { PublicationsApp } from "@/apps/PublicationsApp";
-import { ProjectsApp } from "@/apps/ProjectsApp";
-import { GamesApp } from "@/apps/GamesApp";
 import { ContactApp } from "@/apps/ContactApp";
 import { NotepadApp } from "@/apps/NotepadApp";
 import { DisplayApp } from "@/apps/DisplayApp";
 import { MusicApp } from "@/apps/MusicApp";
 import { TaskManagerApp } from "@/apps/TaskManagerApp";
-import { DocumentsApp } from "@/apps/DocumentsApp";
 import { OQ2000App } from "@/apps/OQ2000App";
 import { DosApp } from "@/apps/DosApp";
+import { explorerAppDescriptor } from "@/apps/ExplorerApp";
+
+// Folder shortcuts are Explorer windows pinned to a path.
+const shortcut = (
+  path: string,
+  title: string,
+  icon: string
+): AppDescriptor => ({
+  ...explorerAppDescriptor(path),
+  title,
+  icon,
+  desktop: true,
+  startMenu: true,
+  pocket: true,
+});
 import { MinesweeperApp } from "@/apps/MinesweeperApp";
 import { IExploreApp } from "@/apps/IExploreApp";
 
 export const APPS: AppDescriptor[] = [
   {
+    ...explorerAppDescriptor("C:"),
+    desktop: true,
+    startMenu: true,
+    pocket: true,
+  },
+  {
     id: "about",
     title: "About Me",
-    icon: "computer",
+    icon: "user",
     component: AboutApp,
     defaultSize: { width: 700, height: 560 },
     autoFit: true,
@@ -50,36 +68,9 @@ export const APPS: AppDescriptor[] = [
     startMenu: true,
     pocket: true,
   },
-  {
-    id: "projects",
-    title: "Projects",
-    icon: "folder",
-    component: ProjectsApp,
-    defaultSize: { width: 760, height: 620 },
-    desktop: true,
-    startMenu: true,
-    pocket: true,
-  },
-  {
-    id: "games",
-    title: "Games",
-    icon: "joystick",
-    component: GamesApp,
-    defaultSize: { width: 760, height: 420 },
-    desktop: true,
-    startMenu: true,
-    pocket: true,
-  },
-  {
-    id: "documents",
-    title: "My Documents",
-    icon: "folder",
-    component: DocumentsApp,
-    defaultSize: { width: 520, height: 400 },
-    desktop: true,
-    startMenu: true,
-    pocket: true,
-  },
+  shortcut("C:\\Projects", "Projects", "folder"),
+  shortcut("C:\\Games", "Games", "joystick"),
+  shortcut("C:\\My Documents", "My Documents", "folder"),
   {
     id: "oq2000",
     title: "OQ2000",

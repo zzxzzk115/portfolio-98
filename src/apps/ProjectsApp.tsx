@@ -1,18 +1,13 @@
 "use client";
 
+// Slimmed to a descriptor/component module: the folder view now lives in
+// Explorer (C:\Projects); this file provides the per-project window.
+
 import { useState } from "react";
 import type { ProjectContent, ProjectCategory } from "@/lib/content-types";
-import { useContent } from "@/system/ContentContext";
 import { PixelIcon } from "@/system/pixel-icons";
-import { useWindowManager } from "@/system/WindowManager";
 import { Markdown } from "@/components/Markdown";
 import { asset, type AppDescriptor } from "@/system/types";
-
-const CATEGORY_LABELS: Record<ProjectCategory, string> = {
-  work: "Engineering & Research",
-  indie: "Indie Games",
-  fun: "Just for Fun",
-};
 
 const CATEGORY_ICONS: Record<ProjectCategory, string> = {
   work: "flask",
@@ -30,45 +25,6 @@ export function projectAppDescriptor(project: ProjectContent): AppDescriptor {
     },
     defaultSize: { width: 620, height: 500 },
   };
-}
-
-export function ProjectsApp() {
-  const { projects } = useContent();
-  const wm = useWindowManager();
-  const [selected, setSelected] = useState<string | null>(null);
-
-  const categories: ProjectCategory[] = ["work", "indie", "fun"];
-
-  return (
-    <div className="app-body">
-      {categories.map((cat) => {
-        const items = projects.filter((p) => p.meta.category === cat);
-        if (items.length === 0) return null;
-        return (
-          <fieldset key={cat}>
-            <legend>{CATEGORY_LABELS[cat]}</legend>
-            <div className="icon-grid">
-              {items.map((p) => (
-                <button
-                  key={p.meta.slug}
-                  className={
-                    "icon-grid-item project-card" +
-                    (selected === p.meta.slug ? " icon-grid-item-selected" : "")
-                  }
-                  onClick={() => setSelected(p.meta.slug)}
-                  onDoubleClick={() => wm.open(projectAppDescriptor(p))}
-                  title={p.meta.blurb}
-                >
-                  <ProjectThumb project={p} icon={CATEGORY_ICONS[cat]} />
-                  <span>{p.meta.name}</span>
-                </button>
-              ))}
-            </div>
-          </fieldset>
-        );
-      })}
-    </div>
-  );
 }
 
 export function ProjectThumb({

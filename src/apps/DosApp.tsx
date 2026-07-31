@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { APPS } from "@/system/registry";
 import { useWindowManager } from "@/system/WindowManager";
 import { useContent } from "@/system/ContentContext";
+import { buildVfs, findNode, type VfsNode } from "@/lib/vfs";
 
 interface Line {
   text: string;
@@ -11,7 +12,10 @@ interface Line {
 
 export function DosApp({ windowId }: { windowId: string }) {
   const wm = useWindowManager();
-  const { site } = useContent();
+  const content = useContent();
+  const { site } = content;
+  const root = buildVfs(content);
+  const [cwd, setCwd] = useState("C:");
   const [lines, setLines] = useState<Line[]>([
     { text: `${site.osName} [Version 4.10.1998]` },
     { text: "(C) Kexuan Zhang. Type HELP for available commands." },
@@ -32,7 +36,7 @@ export function DosApp({ windowId }: { windowId: string }) {
 
   const run = (raw: string) => {
     const cmd = raw.trim();
-    print(`C:\\> ${cmd}`);
+    print(`${cwd}\\> ${cmd}`);
     if (!cmd) return;
     setHistory((h) => [cmd, ...h].slice(0, 50));
     setHistPos(-1);
@@ -44,8 +48,11 @@ export function DosApp({ windowId }: { windowId: string }) {
       case "help":
         print(
           "  HELP            this text",
-          "  DIR             list installed programs",
-          "  START <name>    launch a program (e.g. START music)",
+          "  DIR             list current directory",
+          "  CD <dir>        change directory (CD .. to go up)",
+          "  TYPE <file>     print a text file",
+          "  TREE            draw the directory tree",
+          "  START <name>    open a file or program (path or app id)",
           "  VER             show version",
           "  WHOAMI          about the owner of this machine",
           "  ECHO <text>     echo text",
@@ -55,22 +62,89 @@ export function DosApp({ windowId }: { windowId: string }) {
         );
         break;
       case "dir": {
-        print(" Directory of C:\\PROGRAMS", "");
-        APPS.forEach((a) =>
+        const node = findNode(root, arg || cwd, cwd);
+        if (!node || node.kind === "file") {
+          print("Invalid directory.", "");
+          break;
+        }
+        print(` Directory of ${node.path}`, "");
+        const kids = node.children ?? [];
+        kids.forEach((c) =>
           print(
-            `  ${a.id.toUpperCase().padEnd(14)}<APP>    ${a.title}`
+            c.kind === "file"
+              ? `  ${c.name.padEnd(28)}${String(c.sizeKB ?? 0).padStart(8)} KB`
+              : `  ${c.name.padEnd(28)}   <DIR>`
           )
         );
-        print("", `        ${APPS.length} program(s)`, "");
+        const files = kids.filter((c) => c.kind === "file");
+        print(
+          "",
+          `        ${files.length} file(s), ${kids.length - files.length} dir(s)`,
+          ""
+        );
+        break;
+      }
+      case "cd": {
+        if (!arg) {
+          print(cwd, "");
+          break;
+        }
+        const node = findNode(root, arg, cwd);
+        if (!node || node.kind === "file") {
+          print("Invalid directory.", "");
+        } else {
+          setCwd(node.path);
+          print("");
+        }
+        break;
+      }
+      case "type": {
+        const node = findNode(root, arg, cwd);
+        if (!node || node.kind !== "file") {
+          print(`File not found: ${arg}`, "");
+        } else if (!node.text) {
+          print(`Cannot display ${node.name} — not a text file.`, "");
+        } else {
+          node.text.split("\n").forEach((l) => print(l));
+          print("");
+        }
+        break;
+      }
+      case "tree": {
+        const start = findNode(root, arg || cwd, cwd) ?? root;
+        print(start.path);
+        const walk = (n: VfsNode, prefix: string) => {
+          const kids = n.children ?? [];
+          kids.forEach((c, i) => {
+            const last = i === kids.length - 1;
+            print(`${prefix}${last ? "\\--" : "+--"}${c.name}`);
+            if (c.kind !== "file") {
+              walk(c, prefix + (last ? "   " : "|  "));
+            }
+          });
+        };
+        walk(start, "");
+        print("");
         break;
       }
       case "start": {
+        // App id / title first, then VFS path.
         const app = APPS.find(
-          (a) => a.id === arg.toLowerCase() || a.title.toLowerCase() === arg.toLowerCase()
+          (a) =>
+            a.id === arg.toLowerCase() ||
+            a.title.toLowerCase() === arg.toLowerCase()
         );
         if (app) {
           wm.open(app);
           print(`Starting ${app.title}...`, "");
+          break;
+        }
+        const node = findNode(root, arg, cwd);
+        if (node?.kind === "file" && node.open) {
+          node.open(wm);
+          print(`Starting ${node.name}...`, "");
+        } else if (node && node.kind !== "file") {
+          print(`${node.path} is a directory. Use CD.`, "");
         } else {
           print(`Bad command or file name: ${arg}`, "Try DIR for a list.", "");
         }
@@ -123,7 +197,7 @@ export function DosApp({ windowId }: { windowId: string }) {
           </div>
         ))}
         <div className="dos-prompt-row">
-          <span>C:\&gt;&nbsp;</span>
+          <span>{cwd}\&gt;&nbsp;</span>
           <input
             ref={inputRef}
             className="dos-input"
