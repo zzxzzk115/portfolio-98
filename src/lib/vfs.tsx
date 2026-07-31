@@ -149,16 +149,38 @@ export function buildVfs(content: SiteContent): VfsNode {
     )
   );
 
+  const PROJECT_CATEGORIES: {
+    key: string;
+    label: string;
+    icon: string;
+  }[] = [
+    { key: "work", label: "Engineering & Research", icon: "flask" },
+    { key: "indie", label: "Indie Games", icon: "joystick" },
+    { key: "fun", label: "Just for Fun", icon: "gameboy" },
+  ];
+
   const projects = folder(C, "Projects", (p) =>
-    content.projects.map((proj) =>
-      file(p, proj.meta.name, {
-        icon: "flask",
-        thumb: proj.meta.img,
-        typeName: "Project",
-        sizeKB: 64 + (hashOf(proj.meta.slug) % 4000),
-        text: proj.meta.blurb,
-        open: (wm) => wm.open(projectAppDescriptor(proj)),
-      })
+    PROJECT_CATEGORIES.filter((cat) =>
+      content.projects.some((x) => x.meta.category === cat.key)
+    ).map((cat) =>
+      folder(
+        p,
+        cat.label,
+        (cp) =>
+          content.projects
+            .filter((proj) => proj.meta.category === cat.key)
+            .map((proj) =>
+              file(cp, proj.meta.name, {
+                icon: cat.icon,
+                thumb: proj.meta.img,
+                typeName: "Project",
+                sizeKB: 64 + (hashOf(proj.meta.slug) % 4000),
+                text: proj.meta.blurb,
+                open: (wm) => wm.open(projectAppDescriptor(proj)),
+              })
+            ),
+        cat.icon
+      )
     )
   );
 
