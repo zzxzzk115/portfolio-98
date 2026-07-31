@@ -6,7 +6,7 @@ import { useContent } from "@/system/ContentContext";
 import { PixelIcon } from "@/system/pixel-icons";
 import { useWindowManager } from "@/system/WindowManager";
 import { Markdown } from "@/components/Markdown";
-import type { AppDescriptor } from "@/system/types";
+import { asset, type AppDescriptor } from "@/system/types";
 
 const CATEGORY_LABELS: Record<ProjectCategory, string> = {
   work: "Engineering & Research",
@@ -56,14 +56,14 @@ export function ProjectsApp() {
                 <button
                   key={p.meta.slug}
                   className={
-                    "icon-grid-item" +
+                    "icon-grid-item project-card" +
                     (selected === p.meta.slug ? " icon-grid-item-selected" : "")
                   }
                   onClick={() => setSelected(p.meta.slug)}
                   onDoubleClick={() => wm.open(projectAppDescriptor(p))}
                   title={p.meta.blurb}
                 >
-                  <PixelIcon name={CATEGORY_ICONS[cat]} size={32} />
+                  <ProjectThumb project={p} icon={CATEGORY_ICONS[cat]} />
                   <span>{p.meta.name}</span>
                 </button>
               ))}
@@ -72,6 +72,27 @@ export function ProjectsApp() {
         );
       })}
     </div>
+  );
+}
+
+export function ProjectThumb({
+  project,
+  icon,
+}: {
+  project: ProjectContent;
+  icon: string;
+}) {
+  if (!project.meta.img) {
+    return <PixelIcon name={icon} size={32} />;
+  }
+  return (
+    // eslint-disable-next-line @next/next/no-img-element
+    <img
+      className="project-thumb"
+      src={asset(project.meta.img)}
+      alt={project.meta.name}
+      loading="lazy"
+    />
   );
 }
 

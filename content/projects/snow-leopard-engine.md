@@ -2,6 +2,7 @@
 name: Snow Leopard Engine
 category: work
 order: 2
+img: /assets/projects/snow-leopard-engine.jpg
 blurb: A C++ / OpenGL 4.6 game engine built by a 7-person MSc team at Leeds — where the Vultra story began.
 links:
   - label: GitHub

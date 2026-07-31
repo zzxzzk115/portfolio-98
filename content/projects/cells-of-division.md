@@ -2,6 +2,7 @@
 name: Cells of Division
 category: indie
 order: 1
+img: /assets/projects/cells-of-division.jpg
 blurb: A top-down bullet hell roguelike on Steam — fight alongside clones of your past runs inside the immune system. Free demo out now!
 links:
   - label: Steam Page

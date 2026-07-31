@@ -2,6 +2,7 @@
 name: Vultra Ecosystem
 category: work
 order: 1
+img: /assets/projects/vultra-ecosystem.png
 blurb: A modular family of C++ libraries for real-time rendering, XR research, and game development — from foundation utilities to a multi-backend RHI and a modern engine.
 links:
   - label: VRI on GitHub

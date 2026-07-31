@@ -2,6 +2,7 @@
 name: CatMario GB
 category: fun
 order: 4
+img: /assets/projects/catmario-project.png
 blurb: The troll platformer CatMario, rebuilt for the Game Boy with GB Studio — playable on itch.io or any GB emulator.
 links:
   - label: GitHub

@@ -2,6 +2,7 @@
 name: OmniLyrics
 category: fun
 order: 2
+img: /assets/projects/omnilyrics.png
 blurb: The lyric tool I always wanted — CLI, GUI, and status-bar modes, cross-platform, built with .NET 8 and Avalonia.
 links:
   - label: GitHub

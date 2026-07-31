@@ -41,6 +41,7 @@ export function loadSiteContent(): SiteContent {
         name: d.name ?? file,
         category: d.category ?? "fun",
         blurb: d.blurb ?? "",
+        img: d.img,
         order: d.order ?? 99,
         links: d.links ?? [],
         embed: d.embed,

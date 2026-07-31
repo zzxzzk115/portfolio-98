@@ -2,6 +2,7 @@
 name: Gold Miner Rebirth
 category: fun
 order: 3
+img: /assets/projects/gold-miner-gameshell-project.png
 blurb: A faithful remake of the classic Flash game, built with LÖVE2D for GameShell, Trimui, and other retro gaming handhelds.
 links:
   - label: GitHub

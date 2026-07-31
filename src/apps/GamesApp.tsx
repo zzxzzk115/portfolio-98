@@ -3,7 +3,7 @@
 import { useContent } from "@/system/ContentContext";
 import { PixelIcon } from "@/system/pixel-icons";
 import { useWindowManager } from "@/system/WindowManager";
-import { projectAppDescriptor } from "./ProjectsApp";
+import { projectAppDescriptor, ProjectThumb } from "./ProjectsApp";
 import type { AppDescriptor } from "@/system/types";
 
 export const lazy100Player: AppDescriptor = {
@@ -39,10 +39,17 @@ export function GamesApp() {
       </p>
       <div className="icon-grid">
         <button
-          className="icon-grid-item"
+          className="icon-grid-item project-card"
           onClick={() => wm.open(lazy100Player)}
         >
-          <PixelIcon name="joystick" size={32} />
+          {(() => {
+            const lazy = projects.find((x) => x.meta.slug === "lazy-100");
+            return lazy ? (
+              <ProjectThumb project={lazy} icon="joystick" />
+            ) : (
+              <PixelIcon name="joystick" size={32} />
+            );
+          })()}
           <span>Lazy-100 (play now!)</span>
         </button>
         {GAME_SLUGS.map((slug) => {
@@ -51,10 +58,10 @@ export function GamesApp() {
           return (
             <button
               key={slug}
-              className="icon-grid-item"
+              className="icon-grid-item project-card"
               onClick={() => wm.open(projectAppDescriptor(p))}
             >
-              <PixelIcon name="gameboy" size={32} />
+              <ProjectThumb project={p} icon="gameboy" />
               <span>{p.meta.name}</span>
             </button>
           );

@@ -35,6 +35,7 @@ export interface ProjectMeta {
   category: ProjectCategory;
   order: number;
   blurb: string;
+  img?: string; // thumbnail shown in the Projects folder
   links: { label: string; url: string }[];
   embed?: ProjectEmbed;
 }

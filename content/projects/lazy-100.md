@@ -2,6 +2,7 @@
 name: Lazy-100
 category: fun
 order: 1
+img: /assets/projects/lazy-100.gif
 blurb: A fantasy game console in the spirit of PICO-8 / TIC-80 — built to prove VRI can carry a complete product. Playable in your browser!
 links:
   - label: Play in Browser
